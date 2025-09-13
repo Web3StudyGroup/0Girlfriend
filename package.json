@@ -1,0 +1,33 @@
+{
+  "name": "0girlfriend",
+  "version": "1.0.0",
+  "description": "AI Girlfriend iNFT project using 0G ecosystem",
+  "type": "module",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "deploy": "npx hardhat run scripts/deploy.js",
+    "frontend:dev": "cd front && npm run dev",
+    "frontend:build": "cd front && npm run build",
+    "frontend:install": "cd front && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github-web3study:Web3StudyGroup/0Girlfriend.git"
+  },
+  "keywords": ["blockchain", "ai", "nft", "0g", "ethereum"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "hardhat": "^2.26.0"
+  },
+  "dependencies": {
+    "ethers": "^6.15.0",
+    "@openzeppelin/contracts": "^5.4.0"
+  }
+}
