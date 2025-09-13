@@ -3,6 +3,7 @@ import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import MintGirlfriend from './components/MintGirlfriend';
 import GirlfriendGallery from './components/GirlfriendGallery';
+import MyGirlfriends from './components/MyGirlfriends';
 import ChatInterface from './components/ChatInterface';
 import './App.css';
 
@@ -15,6 +16,15 @@ function App() {
     switch (currentView) {
       case 'mint':
         return <MintGirlfriend onMinted={() => setCurrentView('gallery')} />;
+      case 'myGirlfriends':
+        return (
+          <MyGirlfriends
+            onSelectGirlfriend={(gf) => {
+              setSelectedGirlfriend(gf);
+              setCurrentView('chat');
+            }}
+          />
+        );
       case 'chat':
         return (
           <ChatInterface
@@ -51,12 +61,20 @@ function App() {
             </button>
 
             {isConnected && (
-              <button
-                className={currentView === 'mint' ? 'active' : ''}
-                onClick={() => setCurrentView('mint')}
-              >
-                ✨ Mint AI女友
-              </button>
+              <>
+                <button
+                  className={currentView === 'myGirlfriends' ? 'active' : ''}
+                  onClick={() => setCurrentView('myGirlfriends')}
+                >
+                  👑 我的女友
+                </button>
+                <button
+                  className={currentView === 'mint' ? 'active' : ''}
+                  onClick={() => setCurrentView('mint')}
+                >
+                  ✨ Mint AI女友
+                </button>
+              </>
             )}
           </nav>
 

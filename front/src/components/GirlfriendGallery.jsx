@@ -18,6 +18,10 @@ const GirlfriendGallery = ({ onSelectGirlfriend }) => {
   useEffect(() => {
     if (publicGirlfriends && !isLoading) {
       loadGirlfriendDetails(publicGirlfriends);
+    } else if (!isLoading && !publicGirlfriends) {
+      // 合约调用完成但没有数据
+      setGirlfriends([]);
+      setLoading(false);
     }
   }, [publicGirlfriends, isLoading]);
 
@@ -42,17 +46,57 @@ const GirlfriendGallery = ({ onSelectGirlfriend }) => {
     }
   };
 
+
   const getGirlfriendDetails = async (tokenId) => {
-    // 这里应该调用合约获取详情
-    // 暂时返回模拟数据
-    return {
-      name: `AI女友 #${tokenId}`,
-      personality: '温柔，聪明，幽默',
-      imageHash: 'QmXXXXXX',
-      creator: '0x1234567890123456789012345678901234567890',
-      totalChats: Math.floor(Math.random() * 100),
-      isPublic: true
-    };
+    try {
+      // 使用 wagmi 的 readContract 调用合约
+      const { readContract } = await import('wagmi/actions');
+      const { http } = await import('viem');
+      const { createConfig } = await import('wagmi');
+
+      // 临时创建config，因为主要的config在main.jsx中
+      const tempConfig = createConfig({
+        chains: [{
+          id: 16601,
+          name: '0G-Galileo-Testnet',
+          nativeCurrency: { name: '0G', symbol: 'OG', decimals: 18 },
+          rpcUrls: {
+            default: { http: ['https://evmrpc-testnet.0g.ai'] },
+          },
+        }],
+        transports: {
+          16601: http('https://evmrpc-testnet.0g.ai'),
+        },
+      });
+
+      const details = await readContract(tempConfig, {
+        address: import.meta.env.VITE_CONTRACT_ADDRESS,
+        abi: contractABI.abi,
+        functionName: 'getGirlfriendDetails',
+        args: [tokenId]
+      });
+
+      return {
+        name: details.name,
+        personality: details.encryptedURI, // 临时显示，实际应该解密
+        imageHash: details.imageHash,
+        creator: details.creator,
+        totalChats: details.totalChats.toString(),
+        isPublic: details.isPublic,
+        createdAt: details.createdAt
+      };
+    } catch (error) {
+      console.error(`获取女友 ${tokenId} 详情失败:`, error);
+      return {
+        name: `AI女友 #${tokenId}`,
+        personality: '加载失败',
+        imageHash: '',
+        creator: '0x...',
+        totalChats: '0',
+        isPublic: true,
+        createdAt: Date.now()
+      };
+    }
   };
 
   const handleChatClick = (girlfriend) => {

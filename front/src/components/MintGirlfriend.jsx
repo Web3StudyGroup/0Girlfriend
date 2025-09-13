@@ -78,14 +78,15 @@ const MintGirlfriend = ({ onMinted }) => {
         abi: contractABI.abi,
         functionName: 'mintGirlfriend',
         args: [
-          formData.name,
-          formData.personality,
-          personalityResult.encryptedURI,
-          personalityResult.metadataHash,
-          imageResult.rootHash,
-          formData.isPublic
+          formData.name,                    // string name
+          personalityResult.encryptedURI,   // string encryptedURI
+          personalityResult.metadataHash,   // bytes32 metadataHash
+          imageResult.rootHash,             // string imageHash
+          formData.isPublic                 // bool isPublic
         ],
-        value: parseEther('0.01') // 0.01 $OG
+        value: parseEther('0.01'), // 0.01 $OG
+        gas: 10000000n, // 增加gas限制到500k
+        gasPrice: parseEther('0.0000000000011') // 1 gwei
       });
 
     } catch (err) {
