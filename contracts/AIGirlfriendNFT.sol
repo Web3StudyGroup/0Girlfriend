@@ -13,9 +13,8 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
 
     // INFT specific data structures
     struct AIGirlfriend {
-        string name;
-        string personality;
-        string encryptedURI; // 0G Storage URI for encrypted AI data
+        string name; // Keep name for quick access and display
+        string encryptedURI; // 0G Storage URI for encrypted AI data (contains personality)
         bytes32 metadataHash; // Hash of encrypted metadata
         string imageHash; // 0G Storage hash for profile image
         address creator;
@@ -63,15 +62,13 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
     // INFT Mint function with encrypted metadata
     function mintGirlfriend(
         string memory name,
-        string memory personality,
-        string memory encryptedURI,
+        string memory encryptedURI, // Contains encrypted personality and other AI data
         bytes32 metadataHash,
         string memory imageHash,
         bool isPublic
     ) external payable nonReentrant {
         require(msg.value >= MINT_PRICE, "Insufficient payment for minting");
         require(bytes(name).length > 0, "Name cannot be empty");
-        require(bytes(personality).length > 0, "Personality cannot be empty");
         require(bytes(encryptedURI).length > 0, "Encrypted URI cannot be empty");
         require(metadataHash != bytes32(0), "Metadata hash cannot be empty");
         require(bytes(imageHash).length > 0, "Image hash cannot be empty");
@@ -86,7 +83,6 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
 
         girlfriends[tokenId] = AIGirlfriend({
             name: name,
-            personality: personality,
             encryptedURI: encryptedURI,
             metadataHash: metadataHash,
             imageHash: imageHash,
@@ -102,7 +98,7 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
             tokenId,
             msg.sender,
             name,
-            personality,
+            "", // No longer emit personality in plain text for privacy
             encryptedURI,
             metadataHash,
             imageHash
@@ -244,10 +240,9 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
         AIGirlfriend memory gf = girlfriends[tokenId];
 
         // Return basic public metadata (for marketplace display)
-        // The actual AI intelligence data is stored encrypted in 0G Storage
+        // The actual AI intelligence data (personality) is stored encrypted in 0G Storage
         return string(abi.encodePacked(
             '{"name":"', gf.name, '",',
-            '"personality":"', gf.personality, '",',
             '"image":"', gf.imageHash, '",',
             '"creator":"', addressToString(gf.creator), '",',
             '"totalChats":', uintToString(gf.totalChats), ',',
