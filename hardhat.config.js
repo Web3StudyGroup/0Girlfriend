@@ -1,4 +1,6 @@
 import "@nomicfoundation/hardhat-toolbox";
+import dotenv from "dotenv";
+dotenv.config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 export default {
@@ -11,7 +13,22 @@ export default {
     "0g-testnet": {
       url: "https://evmrpc-testnet.0g.ai",
       chainId: 16601,
-      accounts: []
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : []
     }
+  },
+  etherscan: {
+    apiKey: {
+      "0g-testnet": "fake-api-key"
+    },
+    customChains: [
+      {
+        network: "0g-testnet",
+        chainId: 16601,
+        urls: {
+          apiURL: "https://chainscan-galileo.0g.ai/api",
+          browserURL: "https://chainscan-galileo.0g.ai"
+        }
+      }
+    ]
   }
 };
