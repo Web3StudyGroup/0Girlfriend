@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ZGStorageService from '../utils/0g-storage';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useWalletClient } from 'wagmi';
 import { parseEther } from 'viem';
 import contractABI from '../contracts/AIGirlfriendINFT.json';
 
@@ -15,6 +15,7 @@ const MintGirlfriend = ({ onMinted }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const { address } = useAccount();
+  const { data: walletClient } = useWalletClient();
   const { writeContract, data: hash, isPending } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
@@ -48,9 +49,14 @@ const MintGirlfriend = ({ onMinted }) => {
     setError('');
 
     try {
+      // 检查钱包客户端是否可用
+      if (!walletClient) {
+        throw new Error('请先连接钱包');
+      }
+
       // CLAUDE.md要求3: 图片和性格，存储在0g storage里
       const zgStorage = new ZGStorageService();
-      await zgStorage.initWithSigner(/* signer */);
+      await zgStorage.initWithSigner(walletClient);
 
       // 上传图片到0G Storage
       const imageResult = await zgStorage.uploadImage(formData.image);

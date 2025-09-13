@@ -11,9 +11,9 @@ class ZGStorageService {
     this.signer = null;
   }
 
-  // 初始化，传入用户的签名器
-  async initWithSigner(signer) {
-    this.signer = signer;
+  // 初始化，传入用户的钱包客户端
+  async initWithSigner(walletClient) {
+    this.signer = walletClient;
   }
 
   // CLAUDE.md要求2,3: 女友照片从本地拉取，存储在0g storage里
