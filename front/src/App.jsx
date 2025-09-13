@@ -38,7 +38,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>🤖💕 AI Girlfriend iNFT</h1>
+        <h1>🤖💕 0Girlfriend</h1>
         <p>用iNFT创造你的AI女友，在0G网络上永久存储和聊天</p>
 
         <div className="header-controls">
@@ -67,7 +67,7 @@ function App() {
       <main className="app-main">
         {!isConnected ? (
           <div className="welcome-screen">
-            <h2>欢迎来到 AI Girlfriend iNFT 平台</h2>
+            <h2>欢迎来到 AI 0Girlfriend 平台</h2>
             <p>🎯 功能特色：</p>
             <ul>
               <li>💰 只需 0.01 $OG 即可 Mint 专属AI女友</li>

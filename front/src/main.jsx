@@ -32,7 +32,7 @@ const og_testnet = {
 };
 
 const config = getDefaultConfig({
-  appName: 'AI Girlfriend iNFT',
+  appName: '0Girlfriend',
   projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID', // 从WalletConnect获取
   chains: [og_testnet],
   ssr: false,
