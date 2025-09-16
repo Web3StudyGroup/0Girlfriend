@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useWallet } from '@/lib/wallet';
+import toast from 'react-hot-toast';
 
 const PERSONALITY_OPTIONS = [
   { value: 'sweet', label: '甜美可爱', description: '温柔体贴，说话软萌，喜欢撒娇' },
@@ -31,7 +32,7 @@ export default function MintAIGirlfriend() {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert('图片大小不能超过5MB');
+        toast.error('图片大小不能超过5MB');
         return;
       }
       setFormData(prev => ({ ...prev, imageFile: file }));
@@ -55,12 +56,12 @@ export default function MintAIGirlfriend() {
 
   const mintNFT = async () => {
     if (!address) {
-      alert('请先连接钱包');
+      toast.error('请先连接钱包');
       return;
     }
 
     if (!formData.name || !formData.personality || !formData.imageFile) {
-      alert('请填写完整信息');
+      toast.error('请填写完整信息');
       return;
     }
 
@@ -127,11 +128,39 @@ export default function MintAIGirlfriend() {
       });
       setPreviewImage(null);
 
-      alert(`AI女友NFT铸造成功！\nToken ID: ${result.tokenId}\n交易哈希: ${result.txHash}`);
+      // 使用toast显示成功信息
+      toast.success('🎉 AI女友NFT铸造成功！', {
+        duration: 6000,
+        style: {
+          fontSize: '16px',
+          padding: '16px',
+        },
+      });
+
+      // 显示详细信息的toast
+      setTimeout(() => {
+        toast.success(`Token ID: ${result.tokenId}`, {
+          duration: 4000,
+          style: {
+            fontSize: '14px',
+          },
+        });
+      }, 1000);
+
+      setTimeout(() => {
+        toast.success(`交易哈希: ${result.txHash}`, {
+          duration: 4000,
+          style: {
+            fontSize: '14px',
+          },
+        });
+      }, 2000);
 
     } catch (error: any) {
       console.error('铸造失败:', error);
-      alert(`铸造失败: ${error.message}`);
+      toast.error(`铸造失败: ${error.message}`, {
+        duration: 6000,
+      });
     } finally {
       setIsUploading(false);
       setUploadStatus('');

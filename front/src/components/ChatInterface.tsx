@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWallet } from '@/lib/wallet';
 import { use0GStorage } from '@/lib/storage';
+import toast from 'react-hot-toast';
 
 interface Message {
   id: string;
@@ -99,7 +100,9 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
 
     } catch (error: any) {
       console.error('Failed to start chat session:', error);
-      alert(`开始聊天失败: ${error.message}`);
+      toast.error(`开始聊天失败: ${error.message}`, {
+        duration: 4000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -294,7 +297,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
                 opacity: isLoading || !address ? 0.5 : 1
               }}
             >
-              {isLoading ? '正在开始...' : '开始聊天 (0.01 $OG)'}
+              {isLoading ? '正在开始...' : '开始聊天 (0.001 $OG)'}
             </button>
           </div>
         ) : (
