@@ -74,9 +74,11 @@ export default function AIGirlfriendGallery() {
     return `/api/download?hash=${imageHash}`;
   };
 
-  const getPlaceholderUrl = () => {
-    // 使用temp文件夹里的快速头像作为占位符
-    return `/temp/image.jpg`;
+  const getPlaceholderUrl = (tokenId: string) => {
+    // 根据tokenId循环选择girl1-5作为默认头像
+    const tokenNum = parseInt(tokenId) || 1;
+    const girlNumber = ((tokenNum - 1) % 5) + 1;
+    return `/temp/girl${girlNumber}.jpg`;
   };
 
   if (selectedGirlfriend) {
@@ -252,7 +254,7 @@ export default function AIGirlfriendGallery() {
 
                 {/* 快速占位头像 */}
                 <img
-                  src={getPlaceholderUrl()}
+                  src={getPlaceholderUrl(girlfriend.tokenId)}
                   alt={`${girlfriend.name} placeholder`}
                   style={{
                     width: '100%',

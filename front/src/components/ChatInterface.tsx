@@ -135,8 +135,11 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
     return welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
   };
 
-  const getPlaceholderUrl = () => {
-    return `/temp/image.jpg`;
+  const getPlaceholderUrl = (tokenId: string) => {
+    // 根据tokenId循环选择girl1-5作为默认头像
+    const tokenNum = parseInt(tokenId) || 1;
+    const girlNumber = ((tokenNum - 1) % 5) + 1;
+    return `/temp/girl${girlNumber}.jpg`;
   };
 
   const sendMessage = async () => {
@@ -307,7 +310,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
             {girlfriend.name[0]}
           </span>
           <img
-            src={getPlaceholderUrl()}
+            src={getPlaceholderUrl(girlfriend.tokenId)}
             alt={`${girlfriend.name} placeholder`}
             style={{
               width: '100%',
@@ -376,7 +379,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
                 {girlfriend.name[0]}
               </span>
               <img
-                src={getPlaceholderUrl()}
+                src={getPlaceholderUrl(girlfriend.tokenId)}
                 alt={`${girlfriend.name} placeholder`}
                 style={{
                   width: '100%',
