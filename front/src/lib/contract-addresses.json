@@ -1,0 +1,9 @@
+{
+  "network": "localhost",
+  "contractAddress": "",
+  "oracleAddress": "",
+  "deployer": "",
+  "mintPrice": "0.01",
+  "chatPrice": "0.01",
+  "deployedAt": ""
+}

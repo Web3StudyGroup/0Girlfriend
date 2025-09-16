@@ -1,77 +1,64 @@
-import hre from "hardhat";
+const { ethers } = require("hardhat");
+require("dotenv").config();
 
 async function main() {
-    console.log("Starting deployment to 0G Testnet...");
+  console.log("开始部署 AI Girlfriend INFT 合约...");
 
-    // Get the deployer account
-    const [deployer] = await hre.ethers.getSigners();
-    console.log("Deploying with account:", deployer.address);
+  const [deployer] = await ethers.getSigners();
+  console.log("部署账户:", deployer.address);
 
-    // Check balance
-    const balance = await hre.ethers.provider.getBalance(deployer.address);
-    console.log("Account balance:", hre.ethers.formatEther(balance), "OG");
+  const balance = await deployer.provider.getBalance(deployer.address);
+  console.log("账户余额:", ethers.formatEther(balance), "OG");
 
-    if (balance < hre.ethers.parseEther("0.1")) {
-        console.error("Insufficient balance! Need at least 0.1 OG for deployment.");
-        console.error("Get testnet tokens from: https://faucet.0g.ai");
-        process.exit(1);
-    }
+  // 暂时使用部署者地址作为 oracle 地址，实际项目中需要部署专门的 oracle
+  const oracleAddress = deployer.address;
 
-    // For now, use deployer as oracle (in production, use proper oracle)
-    const oracleAddress = deployer.address;
+  console.log("部署 AIGirlfriendINFT 合约...");
+  const AIGirlfriendINFT = await ethers.getContractFactory("AIGirlfriendINFT");
+  const aiGirlfriendNFT = await AIGirlfriendINFT.deploy(deployer.address, oracleAddress);
 
-    console.log("Deploying AIGirlfriendINFT contract...");
+  await aiGirlfriendNFT.waitForDeployment();
+  const contractAddress = await aiGirlfriendNFT.getAddress();
 
-    // Deploy the contract
-    const AIGirlfriendINFT = await hre.ethers.getContractFactory("AIGirlfriendINFT");
-    const contract = await AIGirlfriendINFT.deploy(deployer.address, oracleAddress);
+  console.log("✅ AIGirlfriendINFT 部署成功!");
+  console.log("合约地址:", contractAddress);
+  console.log("Oracle 地址:", oracleAddress);
+  console.log("所有者地址:", deployer.address);
 
-    // Wait for deployment
-    await contract.waitForDeployment();
-    const contractAddress = await contract.getAddress();
+  // 验证合约配置
+  const mintPrice = await aiGirlfriendNFT.MINT_PRICE();
+  const chatPrice = await aiGirlfriendNFT.CHAT_PRICE();
 
-    console.log("✅ AIGirlfriendINFT deployed to:", contractAddress);
-    console.log("📝 Contract owner:", deployer.address);
-    console.log("🔮 Oracle address:", oracleAddress);
-    console.log("🌐 Network: 0G Testnet (Chain ID: 16601)");
-    console.log("🔍 Explorer:", `https://chainscan-galileo.0g.ai/address/${contractAddress}`);
+  console.log("\n📋 合约配置信息:");
+  console.log("铸造价格:", ethers.formatEther(mintPrice), "OG");
+  console.log("聊天价格:", ethers.formatEther(chatPrice), "OG");
 
-    // Verify contract constants
-    const mintPrice = await contract.MINT_PRICE();
-    const chatPrice = await contract.CHAT_PRICE();
+  console.log("\n🚀 部署完成! 请更新前端代码中的合约地址:");
+  console.log(`const AI_GIRLFRIEND_CONTRACT = '${contractAddress}';`);
 
-    console.log("\n📊 Contract Configuration:");
-    console.log("- Mint Price:", hre.ethers.formatEther(mintPrice), "OG");
-    console.log("- Chat Price:", hre.ethers.formatEther(chatPrice), "OG");
+  // 保存部署信息到文件
+  const fs = require('fs');
+  const deploymentInfo = {
+    network: hre.network.name,
+    contractAddress: contractAddress,
+    oracleAddress: oracleAddress,
+    deployer: deployer.address,
+    mintPrice: ethers.formatEther(mintPrice),
+    chatPrice: ethers.formatEther(chatPrice),
+    deployedAt: new Date().toISOString()
+  };
 
-    // Save deployment info
-    const deploymentInfo = {
-        network: "0g-testnet",
-        chainId: 16601,
-        contractAddress: contractAddress,
-        deployer: deployer.address,
-        oracle: oracleAddress,
-        mintPrice: hre.ethers.formatEther(mintPrice),
-        chatPrice: hre.ethers.formatEther(chatPrice),
-        deploymentTime: new Date().toISOString(),
-        explorer: `https://chainscan-galileo.0g.ai/address/${contractAddress}`
-    };
+  fs.writeFileSync(
+    'front/src/lib/contract-addresses.json',
+    JSON.stringify(deploymentInfo, null, 2)
+  );
 
-    console.log("\n💾 Deployment Info:");
-    console.log(JSON.stringify(deploymentInfo, null, 2));
-
-    // Instructions for frontend integration
-    console.log("\n🔧 Frontend Integration:");
-    console.log("1. Update frontend contract address to:", contractAddress);
-    console.log("2. Use network RPC: https://evmrpc-testnet.0g.ai");
-    console.log("3. Chain ID: 16601");
-    console.log("4. Get testnet OG from: https://faucet.0g.ai");
-
-    console.log("\n✨ Deployment completed successfully!");
+  console.log("✅ 合约地址信息已保存到 front/src/lib/contract-addresses.json");
 }
 
-main().catch((error) => {
-    console.error("❌ Deployment failed:");
-    console.error(error);
-    process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error("❌ 部署失败:", error);
+    process.exit(1);
+  });
