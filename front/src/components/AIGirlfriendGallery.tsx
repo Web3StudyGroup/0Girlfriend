@@ -370,7 +370,7 @@ export default function AIGirlfriendGallery() {
           color: '#666'
         }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💕</div>
-          <p>You haven't created any AI girlfriends yet</p>
+          <p>You haven&apos;t created any AI girlfriends yet</p>
           <p style={{ fontSize: '0.9rem' }}>Go create your first exclusive AI girlfriend!</p>
         </div>
       )}
