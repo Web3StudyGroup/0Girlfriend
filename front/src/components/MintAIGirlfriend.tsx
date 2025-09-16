@@ -27,19 +27,49 @@ export default function MintAIGirlfriend() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size cannot exceed 5MB');
-        return;
-      }
-      setFormData(prev => ({ ...prev, imageFile: file }));
+      processImageFile(file);
+    }
+  };
 
-      const reader = new FileReader();
-      reader.onload = (e) => setPreviewImage(e.target?.result as string);
-      reader.readAsDataURL(file);
+  const processImageFile = (file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image size cannot exceed 5MB');
+      return;
+    }
+    setFormData(prev => ({ ...prev, imageFile: file }));
+
+    const reader = new FileReader();
+    reader.onload = (e) => setPreviewImage(e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      if (file.type.startsWith('image/')) {
+        processImageFile(file);
+      } else {
+        toast.error('Please select an image file');
+      }
     }
   };
 
@@ -227,32 +257,60 @@ export default function MintAIGirlfriend() {
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
             Upload Avatar (Max 5MB):
           </label>
+
+          <div
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            style={{
+              border: `2px dashed ${isDragging ? '#e91e63' : '#ddd'}`,
+              borderRadius: '8px',
+              padding: '2rem',
+              textAlign: 'center',
+              backgroundColor: isDragging ? '#fce4ec' : '#f9f9f9',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease',
+              position: 'relative'
+            }}
+            onClick={() => document.getElementById('imageInput')?.click()}
+          >
+            {previewImage ? (
+              <div>
+                <img
+                  src={previewImage}
+                  alt="Preview"
+                  style={{
+                    maxWidth: '200px',
+                    maxHeight: '200px',
+                    borderRadius: '8px',
+                    border: '2px solid #e91e63'
+                  }}
+                />
+                <p style={{ marginTop: '1rem', color: '#666', fontSize: '0.9rem' }}>
+                  Click or drag to change image
+                </p>
+              </div>
+            ) : (
+              <div>
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📸</div>
+                <p style={{ color: '#666', margin: '0 0 0.5rem 0', fontSize: '1rem' }}>
+                  {isDragging ? 'Drop image here' : 'Click to select or drag image here'}
+                </p>
+                <p style={{ color: '#999', margin: 0, fontSize: '0.8rem' }}>
+                  Supports: JPG, PNG, GIF (Max 5MB)
+                </p>
+              </div>
+            )}
+          </div>
+
           <input
+            id="imageInput"
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px'
-            }}
+            style={{ display: 'none' }}
             disabled={isUploading}
           />
-          {previewImage && (
-            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-              <img
-                src={previewImage}
-                alt="Preview"
-                style={{
-                  maxWidth: '200px',
-                  maxHeight: '200px',
-                  borderRadius: '8px',
-                  border: '2px solid #e91e63'
-                }}
-              />
-            </div>
-          )}
         </div>
 
         <div>
@@ -272,79 +330,96 @@ export default function MintAIGirlfriend() {
       {/* 性格选择 */}
       <div style={sectionStyle}>
         <h3 style={{ marginTop: 0, color: '#28a745' }}>Personality Settings</h3>
-        <div style={{ display: 'grid', gap: '0.5rem' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '0.75rem'
+        }}>
           {PERSONALITY_OPTIONS.map((option) => (
             <label
               key={option.value}
               style={{
                 display: 'flex',
+                flexDirection: 'column',
                 alignItems: 'flex-start',
-                padding: '0.75rem',
+                padding: '1rem',
                 border: `2px solid ${formData.personality === option.value ? '#e91e63' : '#ddd'}`,
-                borderRadius: '6px',
+                borderRadius: '8px',
                 cursor: 'pointer',
-                backgroundColor: formData.personality === option.value ? '#fce4ec' : 'white'
+                backgroundColor: formData.personality === option.value ? '#fce4ec' : 'white',
+                transition: 'all 0.2s ease',
+                minHeight: '100px'
               }}
             >
-              <input
-                type="radio"
-                name="personality"
-                value={option.value}
-                checked={formData.personality === option.value}
-                onChange={() => handlePersonalityChange(option.value)}
-                disabled={isUploading}
-                style={{ marginRight: '0.5rem', marginTop: '0.2rem' }}
-              />
-              <div>
+              <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                <input
+                  type="radio"
+                  name="personality"
+                  value={option.value}
+                  checked={formData.personality === option.value}
+                  onChange={() => handlePersonalityChange(option.value)}
+                  disabled={isUploading}
+                  style={{ marginRight: '0.5rem', marginTop: '0.1rem' }}
+                />
                 <strong>{option.label}</strong>
-                <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '0.25rem' }}>
-                  {option.description}
-                </div>
+              </div>
+              <div style={{ fontSize: '0.85rem', color: '#666', lineHeight: 1.4, flex: 1 }}>
+                {option.description}
               </div>
             </label>
           ))}
 
-          {/* 自定义性格 */}
+          {/* Custom Personality */}
           <label
             style={{
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'flex-start',
-              padding: '0.75rem',
+              padding: '1rem',
               border: `2px solid ${formData.personality === 'custom' ? '#e91e63' : '#ddd'}`,
-              borderRadius: '6px',
+              borderRadius: '8px',
               cursor: 'pointer',
-              backgroundColor: formData.personality === 'custom' ? '#fce4ec' : 'white'
+              backgroundColor: formData.personality === 'custom' ? '#fce4ec' : 'white',
+              transition: 'all 0.2s ease',
+              minHeight: '100px',
+              gridColumn: formData.personality === 'custom' ? 'span 2' : 'span 1'
             }}
           >
-            <input
-              type="radio"
-              name="personality"
-              value="custom"
-              checked={formData.personality === 'custom'}
-              onChange={() => handlePersonalityChange('custom')}
-              disabled={isUploading}
-              style={{ marginRight: '0.5rem', marginTop: '0.2rem' }}
-            />
-            <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+              <input
+                type="radio"
+                name="personality"
+                value="custom"
+                checked={formData.personality === 'custom'}
+                onChange={() => handlePersonalityChange('custom')}
+                disabled={isUploading}
+                style={{ marginRight: '0.5rem', marginTop: '0.1rem' }}
+              />
               <strong>Custom Personality</strong>
-              {formData.personality === 'custom' && (
-                <textarea
-                  value={formData.customPersonality}
-                  onChange={(e) => setFormData(prev => ({ ...prev, customPersonality: e.target.value }))}
-                  placeholder="Describe your AI girlfriend's personality traits..."
-                  disabled={isUploading}
-                  style={{
-                    width: '100%',
-                    marginTop: '0.5rem',
-                    padding: '0.5rem',
-                    border: '1px solid #ddd',
-                    borderRadius: '4px',
-                    resize: 'vertical',
-                    minHeight: '80px'
-                  }}
-                />
-              )}
             </div>
+            {formData.personality === 'custom' && (
+              <textarea
+                value={formData.customPersonality}
+                onChange={(e) => setFormData(prev => ({ ...prev, customPersonality: e.target.value }))}
+                placeholder="Describe your AI girlfriend's personality traits..."
+                disabled={isUploading}
+                style={{
+                  width: '100%',
+                  marginTop: '0.5rem',
+                  padding: '0.5rem',
+                  border: '1px solid #ddd',
+                  borderRadius: '4px',
+                  resize: 'vertical',
+                  minHeight: '80px',
+                  fontSize: '0.9rem'
+                }}
+              />
+            )}
+            {formData.personality !== 'custom' && (
+              <div style={{ fontSize: '0.85rem', color: '#666', lineHeight: 1.4, flex: 1 }}>
+                Create your own unique personality for your AI girlfriend
+              </div>
+            )}
           </label>
         </div>
       </div>
