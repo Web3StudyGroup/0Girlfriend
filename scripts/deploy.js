@@ -1,5 +1,7 @@
 const { ethers } = require("hardhat");
-require("dotenv").config();
+const path = require("path");
+// 从前端目录加载环境变量
+require("dotenv").config({ path: path.resolve(__dirname, "../front/.env") });
 
 async function main() {
   console.log("开始部署 AI Girlfriend INFT 合约...");

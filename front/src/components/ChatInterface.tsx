@@ -36,7 +36,6 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
   const [isLoading, setIsLoading] = useState(false);
   const [personalityData, setPersonalityData] = useState<any>(null);
   const [hasStartedChat, setHasStartedChat] = useState(false);
-  const [privateKey, setPrivateKey] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -47,11 +46,6 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
 
   useEffect(() => {
     loadPersonalityData();
-    // 从localStorage获取私钥（在实际应用中应该使用更安全的方式）
-    const savedPrivateKey = localStorage.getItem('user_private_key');
-    if (savedPrivateKey) {
-      setPrivateKey(savedPrivateKey);
-    }
   }, []);
 
   const loadPersonalityData = async () => {
@@ -75,13 +69,6 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
   const startChatSession = async () => {
     if (hasStartedChat) return;
 
-    if (!privateKey) {
-      const key = prompt('请输入你的私钥来开始聊天（这只是演示，实际应用中不会这样做）:');
-      if (!key) return;
-      setPrivateKey(key);
-      localStorage.setItem('user_private_key', key);
-    }
-
     try {
       setIsLoading(true);
 
@@ -93,7 +80,6 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
         },
         body: JSON.stringify({
           action: 'startChatSession',
-          privateKey: privateKey,
           tokenId: girlfriend.tokenId
         })
       });
@@ -130,11 +116,6 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
   const sendMessage = async () => {
     if (!inputMessage.trim() || !hasStartedChat) return;
 
-    if (!privateKey) {
-      alert('请先设置私钥');
-      return;
-    }
-
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -168,8 +149,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
         body: JSON.stringify({
           messages: chatMessages,
           girlfriendName: girlfriend.name,
-          personality: personalityData?.personality || '温柔可爱的AI女友',
-          privateKey: privateKey
+          personality: personalityData?.personality || '温柔可爱的AI女友'
         })
       });
 

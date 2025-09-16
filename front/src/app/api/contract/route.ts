@@ -8,20 +8,17 @@ const RPC_URL = 'https://evmrpc-testnet.0g.ai';
 
 interface ContractRequest {
   action: 'getAllPublicGirlfriends' | 'getUserCreatedGirlfriends' | 'getGirlfriendDetails' | 'startChatSession' | 'getPrices';
-  privateKey?: string;
   userAddress?: string;
   tokenId?: string;
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, privateKey, userAddress, tokenId }: ContractRequest = await request.json();
+    const { action, userAddress, tokenId }: ContractRequest = await request.json();
 
+    // 如果合约未部署，返回模拟数据用于开发
     if (!AI_GIRLFRIEND_CONTRACT) {
-      return NextResponse.json(
-        { error: '合约地址未配置' },
-        { status: 500 }
-      );
+      return handleMockData(action, userAddress, tokenId);
     }
 
     // 创建provider
@@ -89,8 +86,14 @@ export async function POST(request: NextRequest) {
         });
 
       case 'startChatSession':
-        if (!privateKey || !tokenId) {
-          return NextResponse.json({ error: '需要私钥和tokenId' }, { status: 400 });
+        if (!tokenId) {
+          return NextResponse.json({ error: '需要tokenId' }, { status: 400 });
+        }
+
+        // 从环境变量获取私钥
+        const privateKey = process.env.PRIVATE_KEY;
+        if (!privateKey) {
+          return NextResponse.json({ error: '服务器未配置私钥' }, { status: 500 });
         }
 
         const wallet = new ethers.Wallet(privateKey, provider);
@@ -141,10 +144,15 @@ export async function GET(request: NextRequest) {
     const action = searchParams.get('action');
 
     if (!AI_GIRLFRIEND_CONTRACT) {
-      return NextResponse.json(
-        { error: '合约地址未配置' },
-        { status: 500 }
-      );
+      if (action === 'prices') {
+        return NextResponse.json({
+          success: true,
+          data: {
+            mintPrice: '0.01',
+            chatPrice: '0.01'
+          }
+        });
+      }
     }
 
     const provider = new ethers.JsonRpcProvider(RPC_URL);
@@ -173,5 +181,100 @@ export async function GET(request: NextRequest) {
       { error: `查询失败: ${error.message}` },
       { status: 500 }
     );
+  }
+}
+
+// 处理模拟数据的函数
+function handleMockData(action: string, userAddress?: string, tokenId?: string) {
+  console.log(`[MOCK DATA] 处理操作: ${action}`);
+
+  switch (action) {
+    case 'getAllPublicGirlfriends':
+      return NextResponse.json({
+        success: true,
+        data: [
+          {
+            tokenId: '1',
+            name: '小美',
+            imageHash: 'mock-image-hash-1',
+            creator: '0x1234...5678',
+            totalChats: 15,
+            isPublic: true,
+            createdAt: Date.now() - 86400000 // 1天前
+          },
+          {
+            tokenId: '2',
+            name: '小雨',
+            imageHash: 'mock-image-hash-2',
+            creator: '0x9876...4321',
+            totalChats: 8,
+            isPublic: true,
+            createdAt: Date.now() - 172800000 // 2天前
+          }
+        ]
+      });
+
+    case 'getUserCreatedGirlfriends':
+      if (!userAddress) {
+        return NextResponse.json({ success: true, data: [] });
+      }
+      return NextResponse.json({
+        success: true,
+        data: [
+          {
+            tokenId: '3',
+            name: '我的女友',
+            imageHash: 'mock-image-hash-3',
+            creator: userAddress,
+            totalChats: 5,
+            isPublic: false,
+            createdAt: Date.now() - 43200000 // 12小时前
+          }
+        ]
+      });
+
+    case 'getGirlfriendDetails':
+      if (!tokenId) {
+        return NextResponse.json({ error: '需要tokenId' }, { status: 400 });
+      }
+      return NextResponse.json({
+        success: true,
+        data: {
+          tokenId,
+          name: `女友${tokenId}`,
+          imageHash: `mock-image-hash-${tokenId}`,
+          creator: '0x1234...5678',
+          totalChats: Math.floor(Math.random() * 50),
+          isPublic: true,
+          createdAt: Date.now() - Math.random() * 86400000 * 7 // 随机7天内
+        }
+      });
+
+    case 'startChatSession':
+      if (!tokenId) {
+        return NextResponse.json({ error: '需要tokenId' }, { status: 400 });
+      }
+      return NextResponse.json({
+        success: true,
+        data: {
+          txHash: '0xmock-transaction-hash',
+          blockNumber: 12345
+        }
+      });
+
+    case 'getPrices':
+      return NextResponse.json({
+        success: true,
+        data: {
+          mintPrice: '0.01',
+          chatPrice: '0.01'
+        }
+      });
+
+    default:
+      return NextResponse.json(
+        { error: '不支持的操作' },
+        { status: 400 }
+      );
   }
 }

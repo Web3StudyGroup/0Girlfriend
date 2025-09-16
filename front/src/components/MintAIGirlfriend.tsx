@@ -26,7 +26,6 @@ export default function MintAIGirlfriend() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState('');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [privateKey, setPrivateKey] = useState('');
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -65,13 +64,6 @@ export default function MintAIGirlfriend() {
       return;
     }
 
-    if (!privateKey) {
-      const key = prompt('请输入你的私钥来铸造NFT（这只是演示，实际应用中不会这样做）:');
-      if (!key) return;
-      setPrivateKey(key);
-      localStorage.setItem('user_private_key', key);
-    }
-
     try {
       setIsUploading(true);
       setUploadStatus('准备图片数据...');
@@ -92,7 +84,6 @@ export default function MintAIGirlfriend() {
           personality: formData.personality,
           customPersonality: formData.customPersonality,
           isPublic: formData.isPublic,
-          privateKey: privateKey,
           imageBase64: imageBase64,
           imageFileName: formData.imageFile.name
         })

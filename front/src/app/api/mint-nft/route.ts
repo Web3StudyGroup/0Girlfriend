@@ -13,7 +13,6 @@ interface MintRequest {
   personality: string;
   customPersonality?: string;
   isPublic: boolean;
-  privateKey: string;
   imageBase64: string; // Base64 编码的图片
   imageFileName: string;
 }
@@ -25,23 +24,16 @@ export async function POST(request: NextRequest) {
       personality,
       customPersonality,
       isPublic,
-      privateKey,
       imageBase64,
       imageFileName
     }: MintRequest = await request.json();
 
-    if (!privateKey) {
-      return NextResponse.json(
-        { error: '需要私钥来铸造NFT' },
-        { status: 400 }
-      );
-    }
+    // 从环境变量获取私钥
+    const privateKey = process.env.PRIVATE_KEY;
 
-    if (!AI_GIRLFRIEND_CONTRACT) {
-      return NextResponse.json(
-        { error: '合约地址未配置' },
-        { status: 500 }
-      );
+    // 如果没有私钥或合约未配置，返回模拟铸造结果
+    if (!privateKey || !AI_GIRLFRIEND_CONTRACT) {
+      return generateMockMintResult(name, personality, customPersonality, isPublic);
     }
 
     // 创建钱包和signer
@@ -193,4 +185,38 @@ function getPersonalityDescription(personality: string): string {
   };
 
   return personalities[personality] || personalities['sweet'];
+}
+
+// 生成模拟铸造结果
+function generateMockMintResult(
+  name: string,
+  personality: string,
+  customPersonality?: string,
+  isPublic: boolean = true
+) {
+  console.log(`[MOCK MINT] 模拟铸造NFT: ${name}`);
+
+  // 模拟延时
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const mockTokenId = Math.floor(Math.random() * 1000) + 100;
+      const mockTxHash = `0xmock${Date.now().toString(16)}${Math.random().toString(16).slice(2, 8)}`;
+      const mockImageHash = `mock-image-hash-${mockTokenId}`;
+      const mockEncryptedURI = `kv://girlfriend_${Date.now()}_mock`;
+      const mockMetadataHash = `0xmock-metadata-${mockTokenId}`;
+
+      resolve(NextResponse.json({
+        success: true,
+        data: {
+          tokenId: mockTokenId.toString(),
+          txHash: mockTxHash,
+          imageHash: mockImageHash,
+          encryptedURI: mockEncryptedURI,
+          metadataHash: mockMetadataHash,
+          blockNumber: Math.floor(Math.random() * 1000000) + 5000000,
+          gasUsed: Math.floor(Math.random() * 100000) + 200000
+        }
+      }));
+    }, 2000); // 2秒延时模拟真实铸造时间
+  });
 }
