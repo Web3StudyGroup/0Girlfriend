@@ -102,44 +102,10 @@ export default function MintAIGirlfriend() {
 
       setUploadStatus('正在准备人格数据...');
 
-      // 准备人格数据
+      // 准备人格数据（简化版本，直接使用明文）
       const personalityDescription = formData.personality === 'custom'
         ? formData.customPersonality || ''
         : getPersonalityDescription();
-
-      const personalityData = {
-        name: formData.name,
-        personality: personalityDescription,
-        preferences: {
-          chattingStyle: formData.personality,
-          responseLength: 'medium',
-          emotionalLevel: 'moderate'
-        },
-        createdAt: new Date().toISOString(),
-        version: '1.0'
-      };
-
-      // 存储人格数据到KV存储
-      const encryptedData = JSON.stringify(personalityData);
-      const personalityKey = `girlfriend_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-      const kvResponse = await fetch('/api/kv-upload', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          key: personalityKey,
-          value: encryptedData
-        })
-      });
-
-      if (!kvResponse.ok) {
-        throw new Error('人格数据存储失败');
-      }
-
-      const encryptedURI = `kv://${personalityKey}`;
-      const metadataHash = ethers.keccak256(ethers.toUtf8Bytes(encryptedData));
 
       setUploadStatus('正在铸造NFT...');
 
@@ -149,8 +115,7 @@ export default function MintAIGirlfriend() {
       const result = await mintGirlfriend(
         signer,
         formData.name,
-        encryptedURI,
-        metadataHash,
+        personalityDescription,
         imageHash,
         formData.isPublic
       );

@@ -5,28 +5,22 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-// INFT (Intelligent NFT) implementation based on ERC-7857
-contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
+// Simple ERC721 NFT for AI Girlfriend
+contract AIGirlfriendNFT is ERC721, Ownable, ReentrancyGuard {
     uint256 private _nextTokenId = 1;
     uint256 public constant MINT_PRICE = 0.01 ether; // 0.01 $OG
     uint256 public constant CHAT_PRICE = 0.01 ether; // 0.01 $OG per chat session
 
-    // INFT specific data structures
+    // Simple NFT data structure for AI Girlfriend
     struct AIGirlfriend {
-        string name; // Keep name for quick access and display
-        string encryptedURI; // 0G Storage URI for encrypted AI data (contains personality)
-        bytes32 metadataHash; // Hash of encrypted metadata
+        string name;
+        string personality; // Plain text personality description
         string imageHash; // 0G Storage hash for profile image
         address creator;
         uint256 createdAt;
         uint256 totalChats;
         bool isPublic; // Whether others can chat with this AI girlfriend
     }
-
-    // INFT metadata access control
-    mapping(uint256 => bytes32) private _metadataHashes;
-    mapping(uint256 => string) private _encryptedURIs;
-    mapping(uint256 => mapping(address => bytes)) private _authorizations;
 
     mapping(uint256 => AIGirlfriend) public girlfriends;
     mapping(uint256 => mapping(address => uint256)) public chatSessions; // tokenId => user => chat count
@@ -37,12 +31,8 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
         address indexed creator,
         string name,
         string personality,
-        string encryptedURI,
-        bytes32 metadataHash,
         string imageHash
     );
-
-    event MetadataUpdated(uint256 indexed tokenId, bytes32 metadataHash);
 
     event ChatSessionStarted(
         uint256 indexed tokenId,
@@ -50,41 +40,30 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
         uint256 sessionCount
     );
 
-    address public oracle; // Oracle for secure metadata transfer verification
-
-    constructor(address initialOwner, address _oracle)
-        ERC721("AI Girlfriend INFT", "AIGF")
+    constructor(address initialOwner)
+        ERC721("AI Girlfriend NFT", "AIGF")
         Ownable(initialOwner)
-    {
-        oracle = _oracle;
-    }
+    {}
 
-    // INFT Mint function with encrypted metadata
+    // Simple NFT mint function
     function mintGirlfriend(
         string memory name,
-        string memory encryptedURI, // Contains encrypted personality and other AI data
-        bytes32 metadataHash,
+        string memory personality,
         string memory imageHash,
         bool isPublic
     ) external payable nonReentrant {
         require(msg.value >= MINT_PRICE, "Insufficient payment for minting");
         require(bytes(name).length > 0, "Name cannot be empty");
-        require(bytes(encryptedURI).length > 0, "Encrypted URI cannot be empty");
-        require(metadataHash != bytes32(0), "Metadata hash cannot be empty");
+        require(bytes(personality).length > 0, "Personality cannot be empty");
         require(bytes(imageHash).length > 0, "Image hash cannot be empty");
 
         uint256 tokenId = _nextTokenId++;
 
         _safeMint(msg.sender, tokenId);
 
-        // Store INFT-specific metadata
-        _encryptedURIs[tokenId] = encryptedURI;
-        _metadataHashes[tokenId] = metadataHash;
-
         girlfriends[tokenId] = AIGirlfriend({
             name: name,
-            encryptedURI: encryptedURI,
-            metadataHash: metadataHash,
+            personality: personality,
             imageHash: imageHash,
             creator: msg.sender,
             createdAt: block.timestamp,
@@ -98,9 +77,7 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
             tokenId,
             msg.sender,
             name,
-            "", // No longer emit personality in plain text for privacy
-            encryptedURI,
-            metadataHash,
+            personality,
             imageHash
         );
     }
@@ -170,62 +147,6 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
         girlfriends[tokenId].isPublic = isPublic;
     }
 
-    // INFT secure transfer with encrypted metadata
-    function transferWithMetadata(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes calldata sealedKey,
-        bytes calldata proof
-    ) external nonReentrant {
-        require(ownerOf(tokenId) == from, "Not owner");
-        require(_verifyProof(proof), "Invalid proof");
-
-        _updateMetadataAccess(tokenId, to, sealedKey, proof);
-        _transfer(from, to, tokenId);
-
-        emit MetadataUpdated(tokenId, keccak256(sealedKey));
-    }
-
-    // Authorize temporary access for chat
-    function authorizeUsage(
-        uint256 tokenId,
-        address user,
-        bytes calldata authData
-    ) external {
-        require(ownerOf(tokenId) == msg.sender, "Only owner can authorize");
-        _authorizations[tokenId][user] = authData;
-    }
-
-    // Get encrypted metadata URI (only for authorized users)
-    function getEncryptedURI(uint256 tokenId) external view returns (string memory) {
-        require(_exists(tokenId), "Token does not exist");
-        require(
-            ownerOf(tokenId) == msg.sender ||
-            _authorizations[tokenId][msg.sender].length > 0,
-            "Not authorized to access metadata"
-        );
-        return _encryptedURIs[tokenId];
-    }
-
-    // Internal function to update metadata access
-    function _updateMetadataAccess(
-        uint256 tokenId,
-        address /* newOwner */,
-        bytes calldata sealedKey,
-        bytes calldata /* proof */
-    ) internal {
-        // Update encrypted URI for new owner
-        _metadataHashes[tokenId] = keccak256(sealedKey);
-        // Clear old authorizations
-        // Note: In a full implementation, this would iterate through all authorizations
-    }
-
-    // Mock oracle verification (in production, this would call actual oracle)
-    function _verifyProof(bytes calldata proof) internal pure returns (bool) {
-        // Simplified verification - in production this would verify cryptographic proofs
-        return proof.length > 0;
-    }
 
     function withdraw() external onlyOwner {
         uint256 balance = address(this).balance;
@@ -239,10 +160,10 @@ contract AIGirlfriendINFT is ERC721, Ownable, ReentrancyGuard {
 
         AIGirlfriend memory gf = girlfriends[tokenId];
 
-        // Return basic public metadata (for marketplace display)
-        // The actual AI intelligence data (personality) is stored encrypted in 0G Storage
+        // Return basic public metadata including personality
         return string(abi.encodePacked(
             '{"name":"', gf.name, '",',
+            '"personality":"', gf.personality, '",',
             '"image":"', gf.imageHash, '",',
             '"creator":"', addressToString(gf.creator), '",',
             '"totalChats":', uintToString(gf.totalChats), ',',

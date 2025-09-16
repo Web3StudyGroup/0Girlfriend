@@ -1,14 +1,14 @@
 import hre from "hardhat";
 
 async function main() {
-    console.log("Testing AIGirlfriendINFT contract...");
+    console.log("Testing AIGirlfriendNFT contract...");
 
-    // Contract address on 0G testnet
-    const contractAddress = "0x5f8a9cc1948c0634251b49cef3f87edc5711712f";
+    // Contract address from local deployment
+    const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
     try {
-        const AIGirlfriendINFT = await hre.ethers.getContractFactory("AIGirlfriendINFT");
-        const contract = AIGirlfriendINFT.attach(contractAddress);
+        const AIGirlfriendNFT = await hre.ethers.getContractFactory("AIGirlfriendNFT");
+        const contract = AIGirlfriendNFT.attach(contractAddress);
 
         console.log("✅ Connected to contract:", contractAddress);
 

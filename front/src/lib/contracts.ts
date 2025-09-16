@@ -23,23 +23,19 @@ export const AI_GIRLFRIEND_ABI = [
   'function CHAT_PRICE() view returns (uint256)',
   'function getAllPublicGirlfriends() view returns (uint256[])',
   'function getUserCreatedGirlfriends(address user) view returns (uint256[])',
-  'function getGirlfriendDetails(uint256 tokenId) view returns (tuple(string name, string encryptedURI, bytes32 metadataHash, string imageHash, address creator, uint256 createdAt, uint256 totalChats, bool isPublic))',
+  'function getGirlfriendDetails(uint256 tokenId) view returns (tuple(string name, string personality, string imageHash, address creator, uint256 createdAt, uint256 totalChats, bool isPublic))',
   'function getUserChatCount(uint256 tokenId, address user) view returns (uint256)',
-  'function getEncryptedURI(uint256 tokenId) view returns (string)',
   'function ownerOf(uint256 tokenId) view returns (address)',
   'function tokenURI(uint256 tokenId) view returns (string)',
 
   // 状态修改函数
-  'function mintGirlfriend(string name, string encryptedURI, bytes32 metadataHash, string imageHash, bool isPublic) payable',
+  'function mintGirlfriend(string name, string personality, string imageHash, bool isPublic) payable',
   'function startChatSession(uint256 tokenId) payable',
   'function setGirlfriendPublic(uint256 tokenId, bool isPublic)',
-  'function transferWithMetadata(address from, address to, uint256 tokenId, bytes sealedKey, bytes proof)',
-  'function authorizeUsage(uint256 tokenId, address user, bytes authData)',
 
   // 事件
-  'event AIGirlfriendMinted(uint256 indexed tokenId, address indexed creator, string name, string personality, string encryptedURI, bytes32 metadataHash, string imageHash)',
-  'event ChatSessionStarted(uint256 indexed tokenId, address indexed user, uint256 sessionCount)',
-  'event MetadataUpdated(uint256 indexed tokenId, bytes32 metadataHash)'
+  'event AIGirlfriendMinted(uint256 indexed tokenId, address indexed creator, string name, string personality, string imageHash)',
+  'event ChatSessionStarted(uint256 indexed tokenId, address indexed user, uint256 sessionCount)'
 ];
 
 // 检查合约是否已部署

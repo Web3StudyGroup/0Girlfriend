@@ -4,7 +4,7 @@ const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../front/.env") });
 
 async function main() {
-  console.log("开始部署 AI Girlfriend INFT 合约...");
+  console.log("开始部署 AI Girlfriend NFT 合约...");
 
   const [deployer] = await ethers.getSigners();
   console.log("部署账户:", deployer.address);
@@ -12,19 +12,15 @@ async function main() {
   const balance = await deployer.provider.getBalance(deployer.address);
   console.log("账户余额:", ethers.formatEther(balance), "OG");
 
-  // 暂时使用部署者地址作为 oracle 地址，实际项目中需要部署专门的 oracle
-  const oracleAddress = deployer.address;
-
-  console.log("部署 AIGirlfriendINFT 合约...");
-  const AIGirlfriendINFT = await ethers.getContractFactory("AIGirlfriendINFT");
-  const aiGirlfriendNFT = await AIGirlfriendINFT.deploy(deployer.address, oracleAddress);
+  console.log("部署 AIGirlfriendNFT 合约...");
+  const AIGirlfriendNFT = await ethers.getContractFactory("AIGirlfriendNFT");
+  const aiGirlfriendNFT = await AIGirlfriendNFT.deploy(deployer.address);
 
   await aiGirlfriendNFT.waitForDeployment();
   const contractAddress = await aiGirlfriendNFT.getAddress();
 
-  console.log("✅ AIGirlfriendINFT 部署成功!");
+  console.log("✅ AIGirlfriendNFT 部署成功!");
   console.log("合约地址:", contractAddress);
-  console.log("Oracle 地址:", oracleAddress);
   console.log("所有者地址:", deployer.address);
 
   // 验证合约配置
@@ -43,7 +39,6 @@ async function main() {
   const deploymentInfo = {
     network: hre.network.name,
     contractAddress: contractAddress,
-    oracleAddress: oracleAddress,
     deployer: deployer.address,
     mintPrice: ethers.formatEther(mintPrice),
     chatPrice: ethers.formatEther(chatPrice),

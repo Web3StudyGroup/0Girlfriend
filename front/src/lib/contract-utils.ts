@@ -35,6 +35,7 @@ export async function getAllPublicGirlfriends() {
       return {
         tokenId: tokenId.toString(),
         name: details.name,
+        personality: details.personality,
         imageHash: details.imageHash,
         creator: details.creator,
         totalChats: Number(details.totalChats),
@@ -58,6 +59,7 @@ export async function getUserCreatedGirlfriends(userAddress: string) {
       return {
         tokenId: tokenId.toString(),
         name: details.name,
+        personality: details.personality,
         imageHash: details.imageHash,
         creator: details.creator,
         totalChats: Number(details.totalChats),
@@ -78,6 +80,7 @@ export async function getGirlfriendDetails(tokenId: string) {
   return {
     tokenId,
     name: details.name,
+    personality: details.personality,
     imageHash: details.imageHash,
     creator: details.creator,
     totalChats: Number(details.totalChats),
@@ -116,8 +119,7 @@ export async function startChatSession(signer: ethers.Signer, tokenId: string) {
 export async function mintGirlfriend(
   signer: ethers.Signer,
   name: string,
-  encryptedURI: string,
-  metadataHash: string,
+  personality: string,
   imageHash: string,
   isPublic: boolean
 ) {
@@ -126,8 +128,7 @@ export async function mintGirlfriend(
 
   const tx = await contract.mintGirlfriend(
     name,
-    encryptedURI,
-    metadataHash,
+    personality,
     imageHash,
     isPublic,
     { value: mintPrice }

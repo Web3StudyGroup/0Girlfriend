@@ -7,6 +7,7 @@ import ChatInterface from './ChatInterface';
 interface AIGirlfriend {
   tokenId: string;
   name: string;
+  personality: string;
   imageHash: string;
   creator: string;
   totalChats: number;
