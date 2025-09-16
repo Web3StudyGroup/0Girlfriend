@@ -68,32 +68,92 @@ export default function MintAIGirlfriend() {
       setIsUploading(true);
       setUploadStatus('准备图片数据...');
 
-      // 将图片转换为Base64
+      // 获取钱包signer
+      if (!window.ethereum) {
+        throw new Error('请安装MetaMask钱包');
+      }
+
+      const { ethers } = await import('ethers');
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      setUploadStatus('正在上传图片到0G存储...');
+
+      // 将图片转换为Base64并上传到0G存储
       const imageBase64 = await fileToBase64(formData.imageFile);
 
-      setUploadStatus('正在铸造NFT和上传数据...');
-
-      // 调用后端API进行铸造
-      const response = await fetch('/api/mint-nft', {
+      const uploadResponse = await fetch('/api/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
-          personality: formData.personality,
-          customPersonality: formData.customPersonality,
-          isPublic: formData.isPublic,
           imageBase64: imageBase64,
-          imageFileName: formData.imageFile.name
+          fileName: formData.imageFile.name
         })
       });
 
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.error);
+      const uploadResult = await uploadResponse.json();
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.error);
       }
+
+      const imageHash = uploadResult.data.rootHash;
+
+      setUploadStatus('正在准备人格数据...');
+
+      // 准备人格数据
+      const personalityDescription = formData.personality === 'custom'
+        ? formData.customPersonality || ''
+        : getPersonalityDescription();
+
+      const personalityData = {
+        name: formData.name,
+        personality: personalityDescription,
+        preferences: {
+          chattingStyle: formData.personality,
+          responseLength: 'medium',
+          emotionalLevel: 'moderate'
+        },
+        createdAt: new Date().toISOString(),
+        version: '1.0'
+      };
+
+      // 存储人格数据到KV存储
+      const encryptedData = JSON.stringify(personalityData);
+      const personalityKey = `girlfriend_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      const kvResponse = await fetch('/api/kv-upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          key: personalityKey,
+          value: encryptedData
+        })
+      });
+
+      if (!kvResponse.ok) {
+        throw new Error('人格数据存储失败');
+      }
+
+      const encryptedURI = `kv://${personalityKey}`;
+      const metadataHash = ethers.keccak256(ethers.toUtf8Bytes(encryptedData));
+
+      setUploadStatus('正在铸造NFT...');
+
+      // 使用前端合约调用铸造NFT
+      const { mintGirlfriend } = await import('@/lib/contract-utils');
+
+      const result = await mintGirlfriend(
+        signer,
+        formData.name,
+        encryptedURI,
+        metadataHash,
+        imageHash,
+        formData.isPublic
+      );
 
       setUploadStatus('铸造成功！');
 
@@ -107,7 +167,7 @@ export default function MintAIGirlfriend() {
       });
       setPreviewImage(null);
 
-      alert(`AI女友NFT铸造成功！\nToken ID: ${result.data.tokenId}\n交易哈希: ${result.data.txHash}`);
+      alert(`AI女友NFT铸造成功！\nToken ID: ${result.tokenId}\n交易哈希: ${result.txHash}`);
 
     } catch (error: any) {
       console.error('铸造失败:', error);

@@ -72,22 +72,19 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
     try {
       setIsLoading(true);
 
-      // 调用后端API开始聊天会话
-      const response = await fetch('/api/contract', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'startChatSession',
-          tokenId: girlfriend.tokenId
-        })
-      });
+      // 使用前端合约调用开始聊天会话
+      const { startChatSession: contractStartChat } = await import('@/lib/contract-utils');
 
-      const result = await response.json();
-      if (!result.success) {
-        throw new Error(result.error);
+      // 获取用户的signer
+      if (!window.ethereum) {
+        throw new Error('请安装MetaMask钱包');
       }
+
+      const provider = new (await import('ethers')).ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+
+      const result = await contractStartChat(signer, girlfriend.tokenId);
+      console.log('Chat session started:', result);
 
       setHasStartedChat(true);
 

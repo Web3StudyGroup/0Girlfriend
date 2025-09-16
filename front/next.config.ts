@@ -9,6 +9,7 @@ const nextConfig: NextConfig = {
       net: false,
       tls: false,
       child_process: false,
+      'pino-pretty': false,
     };
 
     // Ignore specific modules that cause issues

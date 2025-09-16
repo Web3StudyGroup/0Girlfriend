@@ -33,38 +33,15 @@ export default function AIGirlfriendGallery() {
       setLoading(true);
 
       // 加载所有公开的AI女友
-      const publicResponse = await fetch('/api/contract', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          action: 'getAllPublicGirlfriends'
-        })
-      });
+      const { getAllPublicGirlfriends, getUserCreatedGirlfriends } = await import('@/lib/contract-utils');
 
-      const publicResult = await publicResponse.json();
-      if (publicResult.success) {
-        setGirlfriends(publicResult.data);
-      }
+      const publicGirlfriends = await getAllPublicGirlfriends();
+      setGirlfriends(publicGirlfriends);
 
       // 如果用户已连接，加载用户创建的AI女友
       if (address) {
-        const userResponse = await fetch('/api/contract', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            action: 'getUserCreatedGirlfriends',
-            userAddress: address
-          })
-        });
-
-        const userResult = await userResponse.json();
-        if (userResult.success) {
-          setMyGirlfriends(userResult.data);
-        }
+        const userGirlfriends = await getUserCreatedGirlfriends(address);
+        setMyGirlfriends(userGirlfriends);
       }
 
     } catch (error) {
