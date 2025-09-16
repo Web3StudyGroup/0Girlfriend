@@ -246,13 +246,18 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
 
   const messageContentStyle = (isUser: boolean): React.CSSProperties => ({
     maxWidth: '70%',
+    minWidth: '80px',
     padding: '0.75rem 1rem',
     borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
     backgroundColor: isUser ? '#007bff' : '#f1f3f4',
     color: isUser ? 'white' : '#333',
-    wordBreak: 'break-word',
     fontSize: '0.9rem',
-    lineHeight: 1.4
+    lineHeight: 1.4,
+    whiteSpace: 'pre-line',
+    wordBreak: 'keep-all',
+    overflowWrap: 'break-word',
+    boxSizing: 'border-box',
+    display: 'inline-block'
   });
 
   const avatarStyle: React.CSSProperties = {
@@ -496,9 +501,16 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
                 padding: '0.75rem 1rem',
                 fontSize: '0.9rem',
                 maxHeight: '120px',
-                minHeight: '44px'
+                minHeight: '48px',
+                lineHeight: '1.5',
+                overflow: 'hidden'
               }}
               rows={1}
+              onInput={(e) => {
+                const target = e.target as HTMLTextAreaElement;
+                target.style.height = '48px';
+                target.style.height = Math.min(target.scrollHeight, 120) + 'px';
+              }}
             />
             <button
               onClick={sendMessage}
