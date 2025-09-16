@@ -53,7 +53,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
       // Temporarily use default personality data, should be retrieved from contract
       const defaultPersonality = {
         name: girlfriend.name,
-        personality: 'Gentle and lovely AI girlfriend',
+        personality: girlfriend.tokenId === '1' ? 'Mysterious and charming, speaks with subtle hints' : 'Gentle and lovely AI girlfriend',
         preferences: {
           chattingStyle: 'sweet',
           responseLength: 'medium',

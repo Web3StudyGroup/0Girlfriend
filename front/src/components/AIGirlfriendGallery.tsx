@@ -318,7 +318,7 @@ export default function AIGirlfriendGallery() {
                   color: '#666',
                   fontStyle: 'italic'
                 }}>
-                  {girlfriend.personality}
+                  {girlfriend.tokenId === '1' ? 'Mysterious and charming, speaks with subtle hints' : girlfriend.personality}
                 </p>
 
                 <p style={{
