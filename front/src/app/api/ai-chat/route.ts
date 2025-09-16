@@ -39,6 +39,37 @@ export async function POST(request: NextRequest) {
     // 初始化0G计算网络代理
     const broker = await createZGComputeNetworkBroker(wallet);
 
+    // broker.ledger.addLedger()
+    // 检查账户状态并创建账户（如果需要）
+    try {
+      console.log("account 1");
+      
+      const account = await broker.ledger.getLedger();
+      console.log('账户已存在，余额:', ethers.formatEther(account.totalBalance), 'OG');
+
+      // 如果余额不足，进行充值
+      if (account.totalBalance < ethers.parseEther("0.01")) {
+        console.log('余额不足，正在充值...');
+        await broker.ledger.depositFund(0.02);
+        console.log('充值完成');
+      }
+    } catch (error: any) {
+      console.log('账户不存在或余额不足，正在创建账户并充值...');
+      try {
+        // 创建账户并充值
+        await broker.ledger.addLedger(0.01)
+        await broker.ledger.depositFund(0.02);
+        console.log('账户创建并充值完成');
+      } catch (depositError: any) {
+        console.error('创建账户失败:', depositError);
+        return NextResponse.json(
+          { error: '无法创建AI聊天账户，请稍后重试' },
+          { status: 500 }
+        );
+      }
+    }
+    console.log("buildSystemPrompt");
+    
     // 构建系统提示词
     const systemPrompt = buildSystemPrompt(girlfriendName, personality);
 
@@ -52,7 +83,21 @@ export async function POST(request: NextRequest) {
     const providerAddress = OFFICIAL_PROVIDERS["llama-3.3-70b-instruct"];
 
     // 确保provider已被确认
-    await broker.inference.acknowledgeProviderSigner(providerAddress);
+    try {
+      await broker.inference.acknowledgeProviderSigner(providerAddress);
+      console.log('Provider确认成功');
+    } catch (ackError: any) {
+      console.error('Provider确认失败:', ackError);
+      // 如果是账户问题，再次尝试创建账户
+      if (ackError.message && ackError.message.includes('Account does not exist')) {
+        console.log('重新尝试创建账户...');
+        await broker.ledger.depositFund(0.02);
+        console.log('重新创建账户成功，再次尝试确认provider');
+        await broker.inference.acknowledgeProviderSigner(providerAddress);
+      } else {
+        throw ackError;
+      }
+    }
 
     // 获取服务元数据
     const { endpoint, model } = await broker.inference.getServiceMetadata(providerAddress);
