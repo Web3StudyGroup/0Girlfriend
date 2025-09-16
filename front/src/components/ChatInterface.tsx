@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useWallet } from '@/lib/wallet';
-import { use0GStorage } from '@/lib/storage';
 import toast from 'react-hot-toast';
 
 interface Message {
@@ -30,7 +29,6 @@ interface ChatInterfaceProps {
 
 export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps) {
   const { address } = useWallet();
-  const { downloadKeyValue } = use0GStorage();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -201,7 +199,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
   };
 
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -465,7 +463,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
             <textarea
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyDown}
               placeholder={`给${girlfriend.name}说点什么...`}
               disabled={isLoading}
               style={{

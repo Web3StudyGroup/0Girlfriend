@@ -1,11 +1,8 @@
 'use client'
 
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { useAccount, useBalance } from 'wagmi'
 
 export function WalletConnect() {
-  const { address, isConnected } = useAccount()
-  const { data: balance } = useBalance({ address })
 
   return (
     <div style={{
@@ -21,23 +18,6 @@ export function WalletConnect() {
         <ConnectButton />
       </div>
 
-      {isConnected && (
-        <div>
-          <p><strong>Address:</strong> {address}</p>
-          <p><strong>Balance:</strong> {balance ? `${balance.formatted} ${balance.symbol}` : 'Loading...'}</p>
-
-          <div style={{
-            marginTop: '15px',
-            padding: '10px',
-            backgroundColor: '#d1edff',
-            borderRadius: '5px',
-            fontSize: '0.9rem',
-            color: '#0c5460'
-          }}>
-            📝 Connected successfully! You can now upload files below (payment required first)
-          </div>
-        </div>
-      )}
     </div>
   )
 }
