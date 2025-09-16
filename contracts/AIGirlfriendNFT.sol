@@ -8,8 +8,8 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 // Simple ERC721 NFT for AI Girlfriend
 contract AIGirlfriendNFT is ERC721, Ownable, ReentrancyGuard {
     uint256 private _nextTokenId = 1;
-    uint256 public constant MINT_PRICE = 0.01 ether; // 0.01 $OG
-    uint256 public constant CHAT_PRICE = 0.01 ether; // 0.01 $OG per chat session
+    uint256 public constant MINT_PRICE = 0.001 ether; // 0.01 $OG
+    uint256 public constant CHAT_PRICE = 0.001 ether; // 0.01 $OG per chat session
 
     // Simple NFT data structure for AI Girlfriend
     struct AIGirlfriend {

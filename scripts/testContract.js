@@ -3,8 +3,8 @@ import hre from "hardhat";
 async function main() {
     console.log("Testing AIGirlfriendNFT contract...");
 
-    // Contract address from local deployment
-    const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+    // Contract address from 0G testnet deployment
+    const contractAddress = "0x2CD5Ce130Cf9a71fa1FFFe14144A225Da7c9653C";
 
     try {
         const AIGirlfriendNFT = await hre.ethers.getContractFactory("AIGirlfriendNFT");

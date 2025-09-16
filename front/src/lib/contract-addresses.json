@@ -1,8 +1,8 @@
 {
-  "network": "localhost",
-  "contractAddress": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  "mintPrice": "0.01",
-  "chatPrice": "0.01",
-  "deployedAt": "2025-09-16T11:52:14.175Z"
+  "network": "0g-testnet",
+  "contractAddress": "0x2CD5Ce130Cf9a71fa1FFFe14144A225Da7c9653C",
+  "deployer": "0x09A4d56b22d88B3EEdDeB52b6c49C805000DB022",
+  "mintPrice": "0.001",
+  "chatPrice": "0.001",
+  "deployedAt": "2025-09-16T12:05:08.613Z"
 }
