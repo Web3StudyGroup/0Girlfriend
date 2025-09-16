@@ -79,18 +79,13 @@ export default function MintAIGirlfriend() {
 
       setUploadStatus('正在上传图片到0G存储...');
 
-      // 将图片转换为Base64并上传到0G存储
-      const imageBase64 = await fileToBase64(formData.imageFile);
+      // 创建FormData并上传图片文件
+      const uploadFormData = new FormData();
+      uploadFormData.append('image', formData.imageFile);
 
       const uploadResponse = await fetch('/api/upload', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          imageBase64: imageBase64,
-          fileName: formData.imageFile.name
-        })
+        body: uploadFormData
       });
 
       const uploadResult = await uploadResponse.json();
@@ -98,7 +93,7 @@ export default function MintAIGirlfriend() {
         throw new Error(uploadResult.error);
       }
 
-      const imageHash = uploadResult.data.rootHash;
+      const imageHash = uploadResult.hash;
 
       setUploadStatus('正在准备人格数据...');
 
@@ -143,14 +138,6 @@ export default function MintAIGirlfriend() {
     }
   };
 
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = error => reject(error);
-    });
-  };
 
   const sectionStyle: React.CSSProperties = {
     marginBottom: '1.5rem',
