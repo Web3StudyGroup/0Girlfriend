@@ -98,10 +98,12 @@ export async function POST(request: NextRequest) {
         throw ackError;
       }
     }
-
+    console.log("getServiceMetadata");
+    
     // 获取服务元数据
     const { endpoint, model } = await broker.inference.getServiceMetadata(providerAddress);
-
+    console.log("getServiceMetadata end");
+    
     // 获取最后一条用户消息
     const lastUserMessage = messages[messages.length - 1];
     if (!lastUserMessage || lastUserMessage.role !== 'user') {
@@ -110,10 +112,12 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
+    console.log("lastUserMessage.content:",lastUserMessage.content);
+    
     // 生成请求头
     const headers = await broker.inference.getRequestHeaders(providerAddress, lastUserMessage.content);
-
+    console.log("getRequestHeaders end");
+    
     // 发送请求到AI
     const response = await fetch(`${endpoint}/chat/completions`, {
       method: 'POST',
@@ -128,7 +132,8 @@ export async function POST(request: NextRequest) {
         max_tokens: 500
       })
     });
-
+    console.log("response:",response);
+    
     if (!response.ok) {
       const errorText = await response.text();
       console.error('AI API错误:', errorText);
