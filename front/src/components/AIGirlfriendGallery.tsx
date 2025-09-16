@@ -121,17 +121,6 @@ export default function AIGirlfriendGallery() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 style={{
-        textAlign: 'center',
-        marginBottom: '3rem',
-        fontSize: '2.5rem',
-        background: 'linear-gradient(135deg, #e91e63, #9c27b0)',
-        WebkitBackgroundClip: 'text',
-        WebkitTextFillColor: 'transparent',
-        fontWeight: 'bold'
-      }}>
-        💖 AI Girlfriend World
-      </h1>
 
       {/* 导航标签 */}
       <div style={{
