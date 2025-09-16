@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useWallet } from '@/lib/wallet';
 import toast from 'react-hot-toast';
+import { getFallbackResponse, getErrorResponse } from '@/lib/fallback-responses';
 
 interface Message {
   id: string;
@@ -121,8 +122,17 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
   };
 
   const getWelcomeMessage = () => {
-    const personalityDesc = personalityData?.personality || '我是你的AI女友';
-    return `你好！我是${girlfriend.name}～ ${personalityDesc} 今天想聊什么呢？💕`;
+    const personalityDesc = personalityData?.personality || '温柔可爱的AI女友';
+
+    const welcomeMessages = [
+      `你好！我是${girlfriend.name}～ ${personalityDesc} 今天想聊什么呢？💕`,
+      `嗨！${girlfriend.name}在这里等你呢～ 作为${personalityDesc}，很高兴见到你 ✨`,
+      `你来啦！我是${girlfriend.name}，${personalityDesc} 💖 有什么想和我分享的吗？`,
+      `哈喽～ ${girlfriend.name}向你问好！作为${personalityDesc}，我期待和你的每一次对话呢 😊`,
+      `嘿！${girlfriend.name}在这里～ ${personalityDesc} 今天过得怎么样呀？🌟`
+    ];
+
+    return welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
   };
 
   const getPlaceholderUrl = () => {
@@ -186,10 +196,22 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
 
     } catch (error: any) {
       console.error('Failed to send message:', error);
+
+      // 使用智能回复系统生成备用回复
+      let fallbackContent: string;
+
+      // 如果是网络错误或服务器错误，使用错误专用回复
+      if (error.message && (error.message.includes('network') || error.message.includes('fetch') || error.message.includes('server'))) {
+        fallbackContent = getErrorResponse();
+      } else {
+        // 根据用户消息内容生成智能回复
+        fallbackContent = getFallbackResponse(userMessage.content, girlfriend.name);
+      }
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: '抱歉，我现在有点累了，稍后再聊好吗？💭',
+        content: fallbackContent,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);
