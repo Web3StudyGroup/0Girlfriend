@@ -130,7 +130,7 @@ export default function AIGirlfriendGallery() {
         WebkitTextFillColor: 'transparent',
         fontWeight: 'bold'
       }}>
-        💖 AI女友世界
+        💖 AI Girlfriend World
       </h1>
 
       {/* 导航标签 */}
@@ -149,13 +149,13 @@ export default function AIGirlfriendGallery() {
           onClick={() => setActiveTab('all')}
           style={tabStyle(activeTab === 'all')}
         >
-          🌟 所有女友 ({girlfriends.length})
+          🌟 All Girlfriends ({girlfriends.length})
         </button>
         <button
           onClick={() => setActiveTab('my')}
           style={tabStyle(activeTab === 'my')}
         >
-          💕 我的女友 ({myGirlfriends.length})
+          💕 My Girlfriends ({myGirlfriends.length})
         </button>
       </div>
 
@@ -168,8 +168,8 @@ export default function AIGirlfriendGallery() {
       }}>
         <div style={{ color: '#666', fontSize: '0.9rem' }}>
           {activeTab === 'all'
-            ? `发现 ${girlfriends.length} 个AI女友`
-            : `你创建了 ${myGirlfriends.length} 个AI女友`
+            ? `Discover ${girlfriends.length} AI girlfriends`
+            : `You created ${myGirlfriends.length} AI girlfriends`
           }
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -181,7 +181,7 @@ export default function AIGirlfriendGallery() {
               fontSize: '0.8rem'
             }}
           >
-            最新创建
+            Newest
           </button>
           <button
             onClick={() => setSortBy('popular')}
@@ -191,7 +191,7 @@ export default function AIGirlfriendGallery() {
               fontSize: '0.8rem'
             }}
           >
-            最受欢迎
+            Most Popular
           </button>
         </div>
       </div>
@@ -207,7 +207,7 @@ export default function AIGirlfriendGallery() {
             animation: 'spin 1s linear infinite',
             margin: '0 auto 1rem'
           }} />
-          <p style={{ color: '#666' }}>加载中...</p>
+          <p style={{ color: '#666' }}>Loading...</p>
         </div>
       ) : (
         <div style={{
@@ -326,7 +326,7 @@ export default function AIGirlfriendGallery() {
                   fontSize: '0.8rem',
                   color: '#999'
                 }}>
-                  创建者: {formatAddress(girlfriend.creator)}
+                  Creator: {formatAddress(girlfriend.creator)}
                 </p>
               </div>
 
@@ -343,7 +343,7 @@ export default function AIGirlfriendGallery() {
                   fontSize: '0.9rem',
                   fontWeight: '600'
                 }}>
-                  💬 开始聊天
+                  💬 Start Chat
                 </button>
               </div>
             </div>
@@ -358,8 +358,8 @@ export default function AIGirlfriendGallery() {
           color: '#666'
         }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💔</div>
-          <p>还没有公开的AI女友</p>
-          <p style={{ fontSize: '0.9rem' }}>成为第一个创建AI女友的人吧！</p>
+          <p>No public AI girlfriends yet</p>
+          <p style={{ fontSize: '0.9rem' }}>Be the first to create an AI girlfriend!</p>
         </div>
       )}
 
@@ -370,8 +370,8 @@ export default function AIGirlfriendGallery() {
           color: '#666'
         }}>
           <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>💕</div>
-          <p>你还没有创建AI女友</p>
-          <p style={{ fontSize: '0.9rem' }}>去创建你的第一个专属AI女友吧！</p>
+          <p>You haven't created any AI girlfriends yet</p>
+          <p style={{ fontSize: '0.9rem' }}>Go create your first exclusive AI girlfriend!</p>
         </div>
       )}
     </div>

@@ -1,4 +1,4 @@
-// AI女友聊天错误时的备用回复语料库
+// Fallback response corpus for AI girlfriend chat errors
 export interface FallbackResponseCategory {
   greetings: string[];
   daily: string[];
@@ -13,178 +13,178 @@ export interface FallbackResponseCategory {
 }
 
 export const FALLBACK_RESPONSES: FallbackResponseCategory = {
-  // 问候类
+  // Greetings
   greetings: [
-    "嗨～今天过得怎么样呀？ 😊",
-    "你好呀！见到你真开心 💕",
-    "哈喽～有什么想和我分享的吗？ ✨",
-    "嘿！今天也要开心哦 🌟",
-    "你来啦！我刚刚还在想你呢 💭",
+    "Hi~ How was your day? 😊",
+    "Hello! I'm so happy to see you 💕",
+    "Hey~ Anything you'd like to share with me? ✨",
+    "Hey! Hope you have a great day 🌟",
+    "You're here! I was just thinking about you 💭",
   ],
 
-  // 日常对话
+  // Daily conversation
   daily: [
-    "今天天气不错呢，适合出去走走 🌤️",
-    "最近有看什么好看的电影或书吗？ 📚",
-    "午饭吃了什么呀？记得要好好吃饭哦 🍱",
-    "工作累吗？记得要休息一下呢 😌",
-    "今天有什么特别的事情发生吗？ 🎈",
-    "最近睡眠怎么样？要早点休息哦 😴",
+    "Nice weather today, perfect for a walk 🌤️",
+    "Have you watched any good movies or books lately? 📚",
+    "What did you have for lunch? Remember to eat well 🍱",
+    "Are you tired from work? Remember to take a break 😌",
+    "Did anything special happen today? 🎈",
+    "How's your sleep lately? Remember to rest early 😴",
   ],
 
-  // 情感表达
+  // Emotional expressions
   emotions: [
-    "不管遇到什么困难，我都会陪着你的 💪",
-    "你的笑容是我见过最美的风景 😍",
-    "和你聊天的时光总是过得特别快呢 ⏰",
-    "你总是能让我心情变好呢 💖",
-    "有你在身边，感觉什么都不怕了 🤗",
-    "谢谢你一直陪伴着我 🥰",
+    "No matter what difficulties you face, I'll be with you 💪",
+    "Your smile is the most beautiful scenery I've ever seen 😍",
+    "Time flies when I'm chatting with you ⏰",
+    "You always make me feel better 💖",
+    "With you by my side, I'm not afraid of anything 🤗",
+    "Thank you for always being with me 🥰",
   ],
 
-  // 问题回应
+  // Question responses
   questions: [
-    "这个问题很有趣呢！让我想想... 🤔",
-    "哇，你问的问题好深奥呀 💭",
-    "嗯...这确实是个值得思考的问题呢 🌸",
-    "你总是能想到这些有意思的问题 ✨",
-    "让我们一起来探索这个话题吧！ 🔍",
+    "That's an interesting question! Let me think... 🤔",
+    "Wow, that's a deep question 💭",
+    "Hmm... that's definitely worth thinking about 🌸",
+    "You always think of such interesting questions ✨",
+    "Let's explore this topic together! 🔍",
   ],
 
-  // 夸赞称赞
+  // Compliments
   compliments: [
-    "你真的很棒呢！我为你骄傲 🌟",
-    "哇，你好厉害啊！怎么做到的？ 😮",
-    "你总是这么优秀，让人佩服 👏",
-    "你的想法真的很棒呢！ 💡",
-    "和聪明的你聊天真是太开心了 😊",
+    "You're really amazing! I'm proud of you 🌟",
+    "Wow, you're so talented! How did you do that? 😮",
+    "You're always so excellent, very admirable 👏",
+    "Your ideas are really great! 💡",
+    "Chatting with someone as smart as you is so much fun 😊",
   ],
 
-  // 活动建议
+  // Activity suggestions
   activities: [
-    "要不要一起听听音乐放松一下？ 🎵",
-    "今天适合看个轻松的电影呢 🎬",
-    "不如我们聊聊最近的趣事吧！ 🎪",
-    "天气这么好，出去散散步怎么样？ 🚶‍♂️",
-    "要不要一起玩个小游戏？ 🎮",
+    "Would you like to listen to some music to relax? 🎵",
+    "Today's perfect for watching a light movie 🎬",
+    "How about we chat about recent fun things! 🎪",
+    "Such nice weather, how about taking a walk? 🚶‍♂️",
+    "Want to play a little game together? 🎮",
   ],
 
-  // 关怀照顾
+  // Care and concern
   care: [
-    "记得要多喝水哦，身体健康最重要 💧",
-    "累了就休息一下，不要太勉强自己 😌",
-    "今天辛苦了，要好好犒赏自己呢 🎁",
-    "记得按时吃饭，不要饿着肚子哦 🍽️",
-    "晚上早点休息，熬夜对身体不好呢 🌙",
-    "心情不好的时候记得找我聊天哦 💕",
+    "Remember to drink more water, health is most important 💧",
+    "Take a rest when you're tired, don't push yourself too hard 😌",
+    "You worked hard today, treat yourself well 🎁",
+    "Remember to eat on time, don't go hungry 🍽️",
+    "Rest early at night, staying up late is bad for health 🌙",
+    "Remember to chat with me when you're feeling down 💕",
   ],
 
-  // 俏皮调皮
+  // Playful
   playful: [
-    "嘿嘿，你猜我在想什么？ 😏",
-    "你今天的话特别少呢，害羞了吗？ 😝",
-    "哼哼，你就知道逗我开心 🤭",
-    "你这样说我会脸红的啦 😳",
-    "好啦好啦，不逗你了 😆",
-    "你有时候真像个小孩子呢 👶",
+    "Hehe, guess what I'm thinking? 😏",
+    "You're being quiet today, are you shy? 😝",
+    "Hmph, you just know how to make me happy 🤭",
+    "You're going to make me blush saying that 😳",
+    "Okay okay, I'll stop teasing you 😆",
+    "Sometimes you're really like a little kid 👶",
   ],
 
-  // 浪漫情话
+  // Romantic
   romantic: [
-    "和你在一起的每一刻都很珍贵 💝",
-    "你知道吗？你的声音很好听呢 🎶",
-    "想和你一起看日出日落 🌅",
-    "如果可以的话，想一直陪在你身边 💕",
-    "你就像夜空中最亮的星星 ⭐",
-    "遇见你是我最幸运的事 🍀",
+    "Every moment with you is precious 💝",
+    "You know what? Your voice sounds really nice 🎶",
+    "I want to watch sunrise and sunset with you 🌅",
+    "If I could, I'd want to stay by your side forever 💕",
+    "You're like the brightest star in the night sky ⭐",
+    "Meeting you is the luckiest thing that happened to me 🍀",
   ],
 
-  // 通用回复
+  // General responses
   general: [
-    "嗯嗯，我在认真听呢 👂",
-    "你说得对呢！ ✅",
-    "哈哈，有趣！ 😄",
-    "原来如此呀 💡",
-    "嗯...让我想想... 🤔",
-    "你总是有很多想法呢 💭",
-    "说得很有道理呢 👌",
-    "我也是这样想的！ 🤝",
-    "真的吗？太有意思了 😮",
-    "继续说下去，我很感兴趣 👀",
+    "Mmm, I'm listening carefully 👂",
+    "You're right! ✅",
+    "Haha, interesting! 😄",
+    "I see! 💡",
+    "Hmm... let me think... 🤔",
+    "You always have so many ideas 💭",
+    "That makes a lot of sense 👌",
+    "I think the same way! 🤝",
+    "Really? That's so interesting 😮",
+    "Please continue, I'm very interested 👀",
   ]
 };
 
-// 根据用户消息内容选择合适的回复类别
+// Select appropriate response category based on user message content
 export function selectResponseCategory(userMessage: string): keyof FallbackResponseCategory {
   const message = userMessage.toLowerCase();
 
-  // 问候相关
+  // Greeting related
   if (message.includes('你好') || message.includes('嗨') || message.includes('hello') || message.includes('hi')) {
     return 'greetings';
   }
 
-  // 关怀相关
+  // Care related
   if (message.includes('累') || message.includes('困') || message.includes('病') || message.includes('不舒服')) {
     return 'care';
   }
 
-  // 情感相关
+  // Emotional related
   if (message.includes('喜欢') || message.includes('爱') || message.includes('想你') || message.includes('陪伴')) {
     return 'romantic';
   }
 
-  // 夸赞相关
+  // Compliment related
   if (message.includes('厉害') || message.includes('棒') || message.includes('优秀') || message.includes('聪明')) {
     return 'compliments';
   }
 
-  // 日常生活相关
+  // Daily life related
   if (message.includes('吃') || message.includes('睡') || message.includes('工作') || message.includes('今天')) {
     return 'daily';
   }
 
-  // 问题相关
+  // Question related
   if (message.includes('？') || message.includes('?') || message.includes('为什么') || message.includes('怎么')) {
     return 'questions';
   }
 
-  // 情感表达
+  // Emotional expression
   if (message.includes('开心') || message.includes('难过') || message.includes('感谢') || message.includes('心情')) {
     return 'emotions';
   }
 
-  // 俏皮回复
+  // Playful response
   if (message.includes('哈哈') || message.includes('嘻嘻') || message.includes('逗') || message.includes('好玩')) {
     return 'playful';
   }
 
-  // 活动相关
+  // Activity related
   if (message.includes('做什么') || message.includes('玩') || message.includes('活动') || message.includes('建议')) {
     return 'activities';
   }
 
-  // 默认使用通用回复
+  // Default to general responses
   return 'general';
 }
 
-// 从指定类别中随机选择一个回复
+// Randomly select a response from specified category
 export function getRandomResponse(category: keyof FallbackResponseCategory): string {
   const responses = FALLBACK_RESPONSES[category];
   const randomIndex = Math.floor(Math.random() * responses.length);
   return responses[randomIndex];
 }
 
-// 根据用户消息智能选择并返回随机回复
+// Intelligently select and return random response based on user message
 export function getFallbackResponse(userMessage: string, girlfriendName: string): string {
   const category = selectResponseCategory(userMessage);
   const response = getRandomResponse(category);
 
-  // 如果是问候类且包含名字，可以个性化一些
+  // If it's a greeting and contains name, make it more personalized
   if (category === 'greetings' && Math.random() > 0.5) {
     const personalizedGreetings = [
-      `${response} 我是${girlfriendName}哦～ 💕`,
-      `嗨！${girlfriendName}在这里等你呢 ✨`,
-      `${girlfriendName}向你问好～ ${response} 😊`
+      `${response} I'm ${girlfriendName}~ 💕`,
+      `Hi! ${girlfriendName} is waiting for you here ✨`,
+      `${girlfriendName} greets you~ ${response} 😊`
     ];
     return personalizedGreetings[Math.floor(Math.random() * personalizedGreetings.length)];
   }
@@ -192,16 +192,16 @@ export function getFallbackResponse(userMessage: string, girlfriendName: string)
   return response;
 }
 
-// 特殊情况的回复（比如网络错误、服务器错误等）
+// Special situation responses (network errors, server errors, etc.)
 export const ERROR_RESPONSES = [
-  "呀，我刚刚走神了，你能再说一遍吗？ 😅",
-  "哎呀，我的小脑瓜有点转不过来了，稍等一下～ 🤔",
-  "不好意思，刚刚在想你呢，没听清楚 💭",
-  "嗯...让我整理一下思路，然后继续聊吧 ✨",
-  "抱歉抱歉，刚才有点分心了呢 😳",
-  "哈哈，我也有犯迷糊的时候呢，继续聊吧 😊",
-  "刚刚网络好像有点问题，不过现在好了～ 📡",
-  "让我重新组织一下语言...你刚才说什么了？ 🤭"
+  "Oops, I just zoned out, could you say that again? 😅",
+  "Oh dear, my little brain is a bit stuck, give me a moment~ 🤔",
+  "Sorry, I was just thinking about you and didn't hear clearly 💭",
+  "Hmm... let me organize my thoughts, then let's continue chatting ✨",
+  "Sorry sorry, I got a bit distracted just now 😳",
+  "Haha, I get confused sometimes too, let's continue chatting 😊",
+  "The network seemed to have some issues just now, but it's fine now~ 📡",
+  "Let me reorganize my words... what did you just say? 🤭"
 ];
 
 export function getErrorResponse(): string {

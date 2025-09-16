@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
     if (!privateKey) {
       return NextResponse.json(
-        { error: '服务器未配置私钥，无法使用AI功能' },
+        { error: 'Server private key not configured, cannot use AI functionality' },
         { status: 500 }
       );
     }

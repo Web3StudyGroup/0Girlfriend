@@ -49,7 +49,7 @@ export default function Home() {
               WebkitTextFillColor: 'transparent',
               fontWeight: 'bold'
             }}>
-              💝 0GirlfriendNFT
+              💝 0Girlfriend
             </h1>
 
             <nav style={{
@@ -63,13 +63,13 @@ export default function Home() {
                 onClick={() => setCurrentPage('gallery')}
                 style={navButtonStyle(currentPage === 'gallery')}
               >
-                🏠 首页
+                🏠 Home
               </button>
               <button
                 onClick={() => setCurrentPage('mint')}
                 style={navButtonStyle(currentPage === 'mint')}
               >
-                ✨ 铸造
+                ✨ Mint
               </button>
             </nav>
           </div>
@@ -94,16 +94,16 @@ export default function Home() {
       }}>
         <div style={{ color: '#666', fontSize: '0.9rem', maxWidth: '600px', margin: '0 auto' }}>
           <p style={{ marginBottom: '1rem', fontWeight: '600' }}>
-            基于 0G Network 构建的 AI 女友 NFT 平台
+            AI Girlfriend NFT Platform Built on 0G Network
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
-            <div>🔗 <strong>智能合约:</strong> AI girlfriend INFT</div>
-            <div>💾 <strong>存储:</strong> 0G Storage</div>
+            <div>🔗 <strong>Smart Contract:</strong> AI girlfriend INFT</div>
+            <div>💾 <strong>Storage:</strong> 0G Storage</div>
             <div>🧠 <strong>AI:</strong> 0G Compute</div>
-            <div>💰 <strong>费用:</strong> 铸造 0.01 $OG | 聊天 0.01 $OG</div>
+            <div>💰 <strong>Cost:</strong> Mint 0.01 $OG | Chat 0.01 $OG</div>
           </div>
           <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: '#999' }}>
-            所有数据永久存储在 0G 分布式网络中，确保你的 AI 女友永远不会消失 💕
+            All data is permanently stored in the 0G distributed network, ensuring your AI girlfriend never disappears 💕
           </div>
         </div>
       </footer>

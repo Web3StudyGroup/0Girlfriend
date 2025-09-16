@@ -50,10 +50,10 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
 
   const loadPersonalityData = async () => {
     try {
-      // 暂时使用默认人格数据，实际应该从合约中获取
+      // Temporarily use default personality data, should be retrieved from contract
       const defaultPersonality = {
         name: girlfriend.name,
-        personality: '温柔可爱的AI女友',
+        personality: 'Gentle and lovely AI girlfriend',
         preferences: {
           chattingStyle: 'sweet',
           responseLength: 'medium',
@@ -72,37 +72,37 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
     try {
       setIsLoading(true);
 
-      // 检查钱包连接状态
+      // Check wallet connection status
       if (!address) {
-        toast.error('请先连接钱包');
+        toast.error('Please connect wallet first');
         return;
       }
 
-      // 使用前端合约调用开始聊天会话
+      // Use frontend contract call to start chat session
       const { startChatSession: contractStartChat } = await import('@/lib/contract-utils');
 
-      // 获取用户的signer
+      // Get user's signer
       if (!window.ethereum) {
-        throw new Error('请安装MetaMask钱包');
+        throw new Error('Please install MetaMask wallet');
       }
 
       const provider = new (await import('ethers')).ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
-      // 显示loading消息
-      toast.loading('正在开始聊天会话...', { duration: 2000 });
+      // Show loading message
+      toast.loading('Starting chat session...', { duration: 2000 });
 
       const result = await contractStartChat(signer, girlfriend.tokenId);
       console.log('Chat session started:', result);
 
       setHasStartedChat(true);
 
-      // 显示成功消息
-      toast.success('聊天会话开始成功！开始和你的AI女友聊天吧 💕', {
+      // Show success message
+      toast.success('Chat session started successfully! Start chatting with your AI girlfriend 💕', {
         duration: 3000,
       });
 
-      // 添加欢迎消息
+      // Add welcome message
       const welcomeMessage: Message = {
         id: Date.now().toString(),
         role: 'assistant',
@@ -113,7 +113,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
 
     } catch (error: any) {
       console.error('Failed to start chat session:', error);
-      toast.error(`开始聊天失败: ${error.message}`, {
+      toast.error(`Failed to start chat: ${error.message}`, {
         duration: 4000,
       });
     } finally {
@@ -122,14 +122,14 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
   };
 
   const getWelcomeMessage = () => {
-    const personalityDesc = personalityData?.personality || '温柔可爱的AI女友';
+    const personalityDesc = personalityData?.personality || 'Gentle and lovely AI girlfriend';
 
     const welcomeMessages = [
-      `你好！我是${girlfriend.name}～ ${personalityDesc} 今天想聊什么呢？💕`,
-      `嗨！${girlfriend.name}在这里等你呢～ 作为${personalityDesc}，很高兴见到你 ✨`,
-      `你来啦！我是${girlfriend.name}，${personalityDesc} 💖 有什么想和我分享的吗？`,
-      `哈喽～ ${girlfriend.name}向你问好！作为${personalityDesc}，我期待和你的每一次对话呢 😊`,
-      `嘿！${girlfriend.name}在这里～ ${personalityDesc} 今天过得怎么样呀？🌟`
+      `Hello! I'm ${girlfriend.name}~ ${personalityDesc} What would you like to chat about today? 💕`,
+      `Hi! ${girlfriend.name} is waiting for you here~ As a ${personalityDesc}, I'm so happy to meet you ✨`,
+      `You're here! I'm ${girlfriend.name}, ${personalityDesc} 💖 Is there anything you'd like to share with me?`,
+      `Hello~ ${girlfriend.name} greets you! As a ${personalityDesc}, I look forward to every conversation with you 😊`,
+      `Hey! ${girlfriend.name} is here~ ${personalityDesc} How was your day? 🌟`
     ];
 
     return welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
@@ -157,19 +157,19 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
     setIsLoading(true);
 
     try {
-      // 构建对话历史
+      // Build conversation history
       const conversationHistory = messages.map(msg => ({
         role: msg.role,
         content: msg.content
       }));
 
-      // 添加当前用户消息
+      // Add current user message
       const chatMessages = [
         ...conversationHistory,
         { role: 'user', content: userMessage.content }
       ];
 
-      // 调用后端AI聊天API
+      // Call backend AI chat API
       const response = await fetch('/api/ai-chat', {
         method: 'POST',
         headers: {
@@ -178,7 +178,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
         body: JSON.stringify({
           messages: chatMessages,
           girlfriendName: girlfriend.name,
-          personality: personalityData?.personality || '温柔可爱的AI女友'
+          personality: personalityData?.personality || 'Gentle and lovely AI girlfriend'
         })
       });
 
@@ -200,14 +200,14 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
     } catch (error: any) {
       console.error('Failed to send message:', error);
 
-      // 使用智能回复系统生成备用回复
+      // Use smart reply system to generate fallback response
       let fallbackContent: string;
 
-      // 如果是网络错误或服务器错误，使用错误专用回复
+      // If it's a network error or server error, use error-specific reply
       if (error.message && (error.message.includes('network') || error.message.includes('fetch') || error.message.includes('server'))) {
         fallbackContent = getErrorResponse();
       } else {
-        // 根据用户消息内容生成智能回复
+        // Generate intelligent reply based on user message content
         fallbackContent = getFallbackResponse(userMessage.content, girlfriend.name);
       }
 
@@ -299,7 +299,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
             padding: '0.5rem'
           }}
         >
-          ← 返回
+          ← Back
         </button>
         <div style={avatarStyle}>
           <span style={{
@@ -353,7 +353,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
         <div>
           <h3 style={{ margin: 0, color: '#e91e63' }}>{girlfriend.name}</h3>
           <p style={{ margin: 0, fontSize: '0.8rem', color: '#666', fontStyle: 'italic' }}>
-            {personalityData?.personality || '温柔可爱的AI女友'}
+            {personalityData?.personality || 'Gentle and lovely AI girlfriend'}
           </p>
         </div>
       </div>
@@ -421,7 +421,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
             </div>
             <h3 style={{ color: '#e91e63', marginTop: '1rem' }}>{girlfriend.name}</h3>
             <p style={{ color: '#666', marginBottom: '2rem' }}>
-              点击开始聊天，与{girlfriend.name}开始对话
+              Click to start chatting and begin conversation with {girlfriend.name}
             </p>
             <button
               onClick={startChatSession}
@@ -437,7 +437,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
                 opacity: isLoading || !address ? 0.5 : 1
               }}
             >
-              {isLoading ? '正在开始...' : '开始聊天 (0.001 $OG)'}
+              {isLoading ? 'Starting...' : 'Start Chat (0.001 $OG)'}
             </button>
           </div>
         ) : (
@@ -473,7 +473,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
                   fontStyle: 'italic',
                   opacity: 0.7
                 }}>
-                  正在思考中...
+                  Thinking...
                 </div>
               </div>
             )}
@@ -494,7 +494,7 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={`给${girlfriend.name}说点什么...`}
+              placeholder={`Say something to ${girlfriend.name}...`}
               disabled={isLoading}
               style={{
                 flex: 1,

@@ -5,12 +5,12 @@ import { useWallet } from '@/lib/wallet';
 import toast from 'react-hot-toast';
 
 const PERSONALITY_OPTIONS = [
-  { value: 'sweet', label: '甜美可爱', description: '温柔体贴，说话软萌，喜欢撒娇' },
-  { value: 'cool', label: '高冷御姐', description: '性格冷静，独立自主，有时会傲娇' },
-  { value: 'cheerful', label: '活泼开朗', description: '乐观向上，充满活力，爱说话爱笑' },
-  { value: 'gentle', label: '温柔知性', description: '成熟稳重，善解人意，充满智慧' },
-  { value: 'mysterious', label: '神秘诱惑', description: '神秘莫测，魅力十足，话语间充满暗示' },
-  { value: 'tsundere', label: '傲娇少女', description: '外冷内热，嘴硬心软，经常说反话' }
+  { value: 'sweet', label: 'Sweet & Cute', description: 'Gentle and caring, speaks softly, loves to act cute' },
+  { value: 'cool', label: 'Cool & Elegant', description: 'Calm personality, independent, sometimes prideful' },
+  { value: 'cheerful', label: 'Cheerful & Lively', description: 'Optimistic and upbeat, full of energy, loves to talk and laugh' },
+  { value: 'gentle', label: 'Gentle & Intelligent', description: 'Mature and steady, understanding, full of wisdom' },
+  { value: 'mysterious', label: 'Mysterious & Alluring', description: 'Mysterious and charming, speaks with subtle hints' },
+  { value: 'tsundere', label: 'Tsundere Girl', description: 'Cold outside, warm inside, often says the opposite of what she means' }
 ];
 
 export default function MintAIGirlfriend() {
@@ -32,7 +32,7 @@ export default function MintAIGirlfriend() {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('图片大小不能超过5MB');
+        toast.error('Image size cannot exceed 5MB');
         return;
       }
       setFormData(prev => ({ ...prev, imageFile: file }));
@@ -56,29 +56,29 @@ export default function MintAIGirlfriend() {
 
   const mintNFT = async () => {
     if (!address) {
-      toast.error('请先连接钱包');
+      toast.error('Please connect wallet first');
       return;
     }
 
     if (!formData.name || !formData.personality || !formData.imageFile) {
-      toast.error('请填写完整信息');
+      toast.error('Please fill in complete information');
       return;
     }
 
     try {
       setIsUploading(true);
-      setUploadStatus('准备图片数据...');
+      setUploadStatus('Preparing image data...');
 
       // 获取钱包signer
       if (!window.ethereum) {
-        throw new Error('请安装MetaMask钱包');
+        throw new Error('Please install MetaMask wallet');
       }
 
       const { ethers } = await import('ethers');
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
-      setUploadStatus('正在上传图片到0G存储...');
+      setUploadStatus('Uploading image to 0G storage...');
 
       // 创建FormData并上传图片文件
       const uploadFormData = new FormData();
@@ -96,14 +96,14 @@ export default function MintAIGirlfriend() {
 
       const imageHash = uploadResult.tempImageUrl || uploadResult.hash; // 优先使用临时图片URL
 
-      setUploadStatus('正在准备人格数据...');
+      setUploadStatus('Preparing personality data...');
 
       // 准备人格数据（简化版本，直接使用明文）
       const personalityDescription = formData.personality === 'custom'
         ? formData.customPersonality || ''
         : getPersonalityDescription();
 
-      setUploadStatus('正在铸造NFT...');
+      setUploadStatus('Minting NFT...');
 
       // 使用前端合约调用铸造NFT
       const { mintGirlfriend } = await import('@/lib/contract-utils');
@@ -116,7 +116,7 @@ export default function MintAIGirlfriend() {
         formData.isPublic
       );
 
-      setUploadStatus('铸造成功！');
+      setUploadStatus('Minting successful!');
 
       // 重置表单
       setFormData({
@@ -129,7 +129,7 @@ export default function MintAIGirlfriend() {
       setPreviewImage(null);
 
       // 使用toast显示成功信息
-      toast.success('🎉 AI女友NFT铸造成功！', {
+      toast.success('🎉 AI Girlfriend NFT minted successfully!', {
         duration: 6000,
         style: {
           fontSize: '16px',
@@ -148,7 +148,7 @@ export default function MintAIGirlfriend() {
       }, 1000);
 
       setTimeout(() => {
-        toast.success(`交易哈希: ${result.txHash}`, {
+        toast.success(`Transaction Hash: ${result.txHash}`, {
           duration: 4000,
           style: {
             fontSize: '14px',
@@ -157,8 +157,8 @@ export default function MintAIGirlfriend() {
       }, 2000);
 
     } catch (error: any) {
-      console.error('铸造失败:', error);
-      toast.error(`铸造失败: ${error.message}`, {
+      console.error('Minting failed:', error);
+      toast.error(`Minting failed: ${error.message}`, {
         duration: 6000,
       });
     } finally {
@@ -197,21 +197,21 @@ export default function MintAIGirlfriend() {
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '2rem' }}>
       <h2 style={{ textAlign: 'center', marginBottom: '2rem', color: '#e91e63' }}>
-        💝 铸造专属AI女友
+        💝 Mint Your AI Girlfriend
       </h2>
 
       {/* 基本信息 */}
       <div style={sectionStyle}>
-        <h3 style={{ marginTop: 0, color: '#007bff' }}>基本信息</h3>
+        <h3 style={{ marginTop: 0, color: '#007bff' }}>Basic Information</h3>
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-            女友名称:
+            Girlfriend Name:
           </label>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-            placeholder="给你的AI女友起个名字..."
+            placeholder="Give your AI girlfriend a name..."
             style={{
               width: '100%',
               padding: '0.5rem',
@@ -225,7 +225,7 @@ export default function MintAIGirlfriend() {
 
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>
-            上传头像 (最大5MB):
+            Upload Avatar (Max 5MB):
           </label>
           <input
             type="file"
@@ -243,7 +243,7 @@ export default function MintAIGirlfriend() {
             <div style={{ marginTop: '1rem', textAlign: 'center' }}>
               <img
                 src={previewImage}
-                alt="预览"
+                alt="Preview"
                 style={{
                   maxWidth: '200px',
                   maxHeight: '200px',
@@ -264,14 +264,14 @@ export default function MintAIGirlfriend() {
               disabled={isUploading}
               style={{ marginRight: '0.5rem' }}
             />
-            允许其他人付费与我的AI女友聊天 (你将获得90%的收益分成)
+            Allow others to pay to chat with my AI girlfriend (you will get 90% revenue share)
           </label>
         </div>
       </div>
 
       {/* 性格选择 */}
       <div style={sectionStyle}>
-        <h3 style={{ marginTop: 0, color: '#28a745' }}>性格设定</h3>
+        <h3 style={{ marginTop: 0, color: '#28a745' }}>Personality Settings</h3>
         <div style={{ display: 'grid', gap: '0.5rem' }}>
           {PERSONALITY_OPTIONS.map((option) => (
             <label
@@ -326,12 +326,12 @@ export default function MintAIGirlfriend() {
               style={{ marginRight: '0.5rem', marginTop: '0.2rem' }}
             />
             <div style={{ flex: 1 }}>
-              <strong>自定义性格</strong>
+              <strong>Custom Personality</strong>
               {formData.personality === 'custom' && (
                 <textarea
                   value={formData.customPersonality}
                   onChange={(e) => setFormData(prev => ({ ...prev, customPersonality: e.target.value }))}
-                  placeholder="详细描述你的AI女友性格特点..."
+                  placeholder="Describe your AI girlfriend's personality traits..."
                   disabled={isUploading}
                   style={{
                     width: '100%',
@@ -356,11 +356,11 @@ export default function MintAIGirlfriend() {
         borderColor: '#ffeaa7',
         color: '#856404'
       }}>
-        <h4 style={{ marginTop: 0 }}>💰 费用说明</h4>
+        <h4 style={{ marginTop: 0 }}>💰 Cost Information</h4>
         <ul style={{ margin: 0, paddingLeft: '1.2rem' }}>
-          <li>铸造费用: 0.01 $OG (约等于创建成本)</li>
-          <li>图片和性格数据将永久存储在0G分布式网络中</li>
-          <li>如果设为公开，其他用户与你的AI女友聊天需支付0.01 $OG，你获得90%分成</li>
+          <li>Minting cost: 0.01 $OG (approximately creation cost)</li>
+          <li>Images and personality data will be permanently stored on 0G distributed network</li>
+          <li>If set to public, other users pay 0.01 $OG to chat with your AI girlfriend, you get 90% revenue share</li>
         </ul>
       </div>
 
@@ -370,7 +370,7 @@ export default function MintAIGirlfriend() {
         disabled={isUploading || !address || !formData.name || !formData.personality || !formData.imageFile}
         style={isUploading || !address ? disabledButtonStyle : buttonStyle}
       >
-        {isUploading ? '正在铸造...' : '铸造AI女友NFT (0.01 $OG)'}
+        {isUploading ? 'Minting...' : 'Mint AI Girlfriend NFT (0.01 $OG)'}
       </button>
 
       {uploadStatus && (
@@ -397,7 +397,7 @@ export default function MintAIGirlfriend() {
           color: '#721c24',
           textAlign: 'center'
         }}>
-          请先连接钱包才能铸造NFT
+          Please connect wallet first to mint NFT
         </div>
       )}
     </div>

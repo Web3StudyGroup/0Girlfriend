@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     const file = formData.get('image') as File;
 
     if (!file) {
-      return NextResponse.json({ error: '未找到文件' }, { status: 400 });
+      return NextResponse.json({ error: 'File not found' }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     if (!privateKey) {
       console.error('PRIVATE_KEY environment variable not set');
-      return NextResponse.json({ error: '服务器配置错误：未设置私钥环境变量' }, { status: 500 });
+      return NextResponse.json({ error: 'Server configuration error: Private key environment variable not set' }, { status: 500 });
     }
 
     // 确保私钥格式正确
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     // 验证私钥长度
     if (formattedPrivateKey.length !== 66) {
       return NextResponse.json({
-        error: '私钥格式错误，应该是64位十六进制字符（不包括0x前缀）'
+        error: 'Private key format error, should be 64-bit hexadecimal characters (excluding 0x prefix)'
       }, { status: 500 });
     }
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     if (treeErr) {
       fs.unlinkSync(tempFilePath);
       await zgFile.close();
-      return NextResponse.json({ error: `Merkle tree错误: ${treeErr}` }, { status: 500 });
+      return NextResponse.json({ error: `Merkle tree error: ${treeErr}` }, { status: 500 });
     }
 
     const rootHash = tree?.rootHash();
@@ -92,15 +92,15 @@ export async function POST(request: NextRequest) {
       hash: rootHash,
       tempImageUrl: tempImageUrl, // 添加临时图片URL
       txHash: tx,
-      message: '文件已成功上传到0G Storage'
+      message: 'File successfully uploaded to 0G Storage'
     });
 
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json(
       {
-        error: '上传过程中发生错误',
-        details: error instanceof Error ? error.message : '未知错误'
+        error: 'An error occurred during upload',
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
