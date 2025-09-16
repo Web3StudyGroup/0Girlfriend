@@ -94,7 +94,7 @@ export default function MintAIGirlfriend() {
         throw new Error(uploadResult.error);
       }
 
-      const imageHash = uploadResult.hash;
+      const imageHash = uploadResult.tempImageUrl || uploadResult.hash; // 优先使用临时图片URL
 
       setUploadStatus('正在准备人格数据...');
 

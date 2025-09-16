@@ -6,13 +6,22 @@ import path from 'path';
 // 0G 测试网配置
 const INDEXER_RPC = 'https://indexer-storage-testnet-turbo.0g.ai';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    const { rootHash } = await request.json();
+    const { searchParams } = new URL(request.url);
+    let rootHash = searchParams.get('hash');
 
     if (!rootHash) {
       return NextResponse.json({ error: '请提供rootHash' }, { status: 400 });
     }
+
+    // 确保rootHash格式正确（移除0x前缀如果存在）
+    if (rootHash.startsWith('0x')) {
+      rootHash = rootHash.slice(2);
+    }
+
+    console.log('开始下载文件，原始hash:', searchParams.get('hash'));
+    console.log('处理后rootHash:', rootHash);
 
     const indexer = new Indexer(INDEXER_RPC);
 
@@ -21,14 +30,26 @@ export async function POST(request: NextRequest) {
 
     const downloadPath = path.join(tempDir, `download_${Date.now()}.tmp`);
 
-    console.log('开始下载文件，rootHash:', rootHash);
     console.log('下载路径:', downloadPath);
 
-    const err = await indexer.download(rootHash, downloadPath, true);
+    try {
+      // 添加超时处理
+      const downloadPromise = indexer.download(rootHash, downloadPath, true);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('下载超时')), 10000)
+      );
 
-    if (err) {
-      console.error('下载错误:', err);
-      return NextResponse.json({ error: `下载错误: ${err}` }, { status: 500 });
+      const err = await Promise.race([downloadPromise, timeoutPromise]);
+
+      if (err) {
+        console.error('下载错误:', err);
+        // 返回404而不是500，这样前端可以显示默认头像
+        return NextResponse.json({ error: `下载错误: ${err}` }, { status: 404 });
+      }
+    } catch (error) {
+      console.error('下载过程异常:', error);
+      // 返回404让前端显示默认头像
+      return NextResponse.json({ error: `下载过程异常: ${error}` }, { status: 404 });
     }
 
     if (!fs.existsSync(downloadPath)) {

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Storage Forever - 0G Network",
+  title: "0Girlfriend",
   description: "Upload and store your files permanently on 0G decentralized storage network",
 };
 

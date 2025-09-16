@@ -66,9 +66,17 @@ export default function AIGirlfriendGallery() {
   };
 
   const getImageUrl = (imageHash: string) => {
-    // 如果是0G存储的hash，构建访问URL
-    // 这里需要根据实际的0G存储访问方式来调整
+    // 如果是临时图片URL，直接返回
+    if (imageHash.startsWith('/temp/') || imageHash.startsWith('http')) {
+      return imageHash;
+    }
+    // 否则尝试通过下载API（向后兼容）
     return `/api/download?hash=${imageHash}`;
+  };
+
+  const getPlaceholderUrl = () => {
+    // 使用temp文件夹里的快速头像作为占位符
+    return `/temp/image.jpg`;
   };
 
   if (selectedGirlfriend) {
@@ -88,7 +96,7 @@ export default function AIGirlfriendGallery() {
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
     transition: 'transform 0.2s, box-shadow 0.2s',
     cursor: 'pointer',
-    height: '280px',
+    height: '320px',
     display: 'flex',
     flexDirection: 'column'
   };
@@ -219,22 +227,77 @@ export default function AIGirlfriendGallery() {
             >
               {/* 头像区域 */}
               <div style={{
-                width: '80px',
-                height: '80px',
-                borderRadius: '50%',
+                width: '120px',
+                height: '120px',
+                borderRadius: '12px',
                 backgroundColor: '#e91e63',
                 margin: '0 auto 1rem',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: 'white',
-                fontSize: '2rem',
+                fontSize: '3rem',
                 fontWeight: 'bold',
-                backgroundImage: girlfriend.imageHash ? `url(${getImageUrl(girlfriend.imageHash)})` : undefined,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
+                position: 'relative',
+                overflow: 'hidden'
               }}>
-                {!girlfriend.imageHash && girlfriend.name[0]}
+                {/* 默认头像显示名字首字母 */}
+                <span style={{
+                  position: 'absolute',
+                  zIndex: 1,
+                  pointerEvents: 'none'
+                }}>
+                  {girlfriend.name[0]}
+                </span>
+
+                {/* 快速占位头像 */}
+                <img
+                  src={getPlaceholderUrl()}
+                  alt={`${girlfriend.name} placeholder`}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '12px',
+                    objectFit: 'contain',
+                    objectPosition: 'center',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 2,
+                    backgroundColor: 'transparent'
+                  }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.opacity = '0';
+                  }}
+                />
+
+                {/* 如果有真实图片，用img标签显示 */}
+                {girlfriend.imageHash && (
+                  <img
+                    src={getImageUrl(girlfriend.imageHash)}
+                    alt={girlfriend.name}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      borderRadius: '12px',
+                      objectFit: 'contain',
+                      objectPosition: 'center',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      zIndex: 3,
+                      backgroundColor: 'transparent'
+                    }}
+                    onError={(e) => {
+                      // 真实头像加载失败时隐藏，显示占位头像
+                      (e.target as HTMLImageElement).style.opacity = '0';
+                      console.log('真实头像加载失败，显示占位头像');
+                    }}
+                    onLoad={() => {
+                      console.log('真实头像加载成功');
+                    }}
+                  />
+                )}
               </div>
 
               {/* 基本信息 */}
@@ -249,36 +312,20 @@ export default function AIGirlfriendGallery() {
 
                 <p style={{
                   margin: '0 0 0.75rem 0',
+                  fontSize: '0.9rem',
+                  color: '#666',
+                  fontStyle: 'italic'
+                }}>
+                  {girlfriend.personality}
+                </p>
+
+                <p style={{
+                  margin: '0 0 1rem 0',
                   fontSize: '0.8rem',
                   color: '#999'
                 }}>
                   创建者: {formatAddress(girlfriend.creator)}
                 </p>
-
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  backgroundColor: '#f8f9fa',
-                  padding: '0.5rem',
-                  borderRadius: '8px',
-                  marginBottom: '1rem'
-                }}>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '1.2rem', fontWeight: 'bold', color: '#e91e63' }}>
-                      {girlfriend.totalChats}
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: '#666' }}>对话数</div>
-                  </div>
-                  <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '1rem', color: girlfriend.isPublic ? '#28a745' : '#dc3545' }}>
-                      {girlfriend.isPublic ? '🌐' : '🔒'}
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: '#666' }}>
-                      {girlfriend.isPublic ? '公开' : '私人'}
-                    </div>
-                  </div>
-                </div>
               </div>
 
               {/* 底部按钮区域 */}

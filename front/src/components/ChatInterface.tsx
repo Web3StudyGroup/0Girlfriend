@@ -73,6 +73,12 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
     try {
       setIsLoading(true);
 
+      // 检查钱包连接状态
+      if (!address) {
+        toast.error('请先连接钱包');
+        return;
+      }
+
       // 使用前端合约调用开始聊天会话
       const { startChatSession: contractStartChat } = await import('@/lib/contract-utils');
 
@@ -84,10 +90,18 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
       const provider = new (await import('ethers')).ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
 
+      // 显示loading消息
+      toast.loading('正在开始聊天会话...', { duration: 2000 });
+
       const result = await contractStartChat(signer, girlfriend.tokenId);
       console.log('Chat session started:', result);
 
       setHasStartedChat(true);
+
+      // 显示成功消息
+      toast.success('聊天会话开始成功！开始和你的AI女友聊天吧 💕', {
+        duration: 3000,
+      });
 
       // 添加欢迎消息
       const welcomeMessage: Message = {
@@ -111,6 +125,10 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
   const getWelcomeMessage = () => {
     const personalityDesc = personalityData?.personality || '我是你的AI女友';
     return `你好！我是${girlfriend.name}～ ${personalityDesc} 今天想聊什么呢？💕`;
+  };
+
+  const getPlaceholderUrl = () => {
+    return `/temp/image.jpg`;
   };
 
   const sendMessage = async () => {
@@ -220,14 +238,16 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
   const avatarStyle: React.CSSProperties = {
     width: '36px',
     height: '36px',
-    borderRadius: '50%',
+    borderRadius: '6px',
     backgroundColor: '#e91e63',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     color: 'white',
     fontSize: '0.8rem',
-    flexShrink: 0
+    flexShrink: 0,
+    position: 'relative',
+    overflow: 'hidden'
   };
 
   return (
@@ -254,12 +274,58 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
           ← 返回
         </button>
         <div style={avatarStyle}>
-          {girlfriend.name[0]}
+          <span style={{
+            position: 'absolute',
+            zIndex: 1,
+            pointerEvents: 'none'
+          }}>
+            {girlfriend.name[0]}
+          </span>
+          <img
+            src={getPlaceholderUrl()}
+            alt={`${girlfriend.name} placeholder`}
+            style={{
+              width: '100%',
+              height: '100%',
+              borderRadius: '6px',
+              objectFit: 'contain',
+              objectPosition: 'center',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              zIndex: 2,
+              backgroundColor: 'transparent'
+            }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.opacity = '0';
+            }}
+          />
+          {girlfriend.imageHash && (
+            <img
+              src={`/api/download?hash=${girlfriend.imageHash}`}
+              alt={girlfriend.name}
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '6px',
+                objectFit: 'contain',
+                objectPosition: 'center',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                zIndex: 3,
+                backgroundColor: 'transparent'
+              }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.opacity = '0';
+              }}
+            />
+          )}
         </div>
         <div>
           <h3 style={{ margin: 0, color: '#e91e63' }}>{girlfriend.name}</h3>
-          <p style={{ margin: 0, fontSize: '0.8rem', color: '#666' }}>
-            {girlfriend.totalChats} 次对话 | {girlfriend.isPublic ? '公开' : '私人'}
+          <p style={{ margin: 0, fontSize: '0.8rem', color: '#666', fontStyle: 'italic' }}>
+            {personalityData?.personality || '温柔可爱的AI女友'}
           </p>
         </div>
       </div>
@@ -276,8 +342,52 @@ export default function ChatInterface({ girlfriend, onBack }: ChatInterfaceProps
       >
         {!hasStartedChat ? (
           <div style={{ textAlign: 'center', padding: '2rem' }}>
-            <div style={avatarStyle}>
-              {girlfriend.name[0]}
+            <div style={{...avatarStyle, width: '120px', height: '120px', fontSize: '3rem', margin: '0 auto', borderRadius: '12px'}}>
+              <span style={{
+                position: 'absolute',
+                zIndex: 1,
+                pointerEvents: 'none'
+              }}>
+                {girlfriend.name[0]}
+              </span>
+              <img
+                src={getPlaceholderUrl()}
+                alt={`${girlfriend.name} placeholder`}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '12px',
+                  objectFit: 'cover',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  zIndex: 2,
+                  backgroundColor: 'transparent'
+                }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.opacity = '0';
+                }}
+              />
+              {girlfriend.imageHash && (
+                <img
+                  src={`/api/download?hash=${girlfriend.imageHash}`}
+                  alt={girlfriend.name}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '12px',
+                    objectFit: 'cover',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    zIndex: 3,
+                    backgroundColor: 'transparent'
+                  }}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.opacity = '0';
+                  }}
+                />
+              )}
             </div>
             <h3 style={{ color: '#e91e63', marginTop: '1rem' }}>{girlfriend.name}</h3>
             <p style={{ color: '#666', marginBottom: '2rem' }}>

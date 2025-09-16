@@ -22,9 +22,19 @@ export async function POST(request: NextRequest) {
 
     // 直接使用/tmp目录（适用于所有部署环境）
     const tempDir = '/tmp';
+    const publicTempDir = path.join(process.cwd(), 'front/public/temp');
+
+    // 确保目录存在
+    if (!fs.existsSync(publicTempDir)) {
+      fs.mkdirSync(publicTempDir, { recursive: true });
+    }
 
     const tempFilePath = path.join(tempDir, file.name);
+    const publicTempFilePath = path.join(publicTempDir, `${Date.now()}_${file.name}`);
+
     fs.writeFileSync(tempFilePath, buffer);
+    // 同时保存一份到public目录，用作头像显示
+    fs.writeFileSync(publicTempFilePath, buffer);
 
     const privateKey = process.env.PRIVATE_KEY;
 
@@ -69,15 +79,18 @@ export async function POST(request: NextRequest) {
     console.log("upload finish:",tx);
     
     await zgFile.close();
-    fs.unlinkSync(tempFilePath);
+    fs.unlinkSync(tempFilePath); // 清理临时文件
 
     // if (uploadErr) {
     //   return NextResponse.json({ error: `上传错误: ${uploadErr}` }, { status: 500 });
     // }
 
+    const tempImageUrl = `/temp/${path.basename(publicTempFilePath)}`;
+
     return NextResponse.json({
       success: true,
       hash: rootHash,
+      tempImageUrl: tempImageUrl, // 添加临时图片URL
       txHash: tx,
       message: '文件已成功上传到0G Storage'
     });
